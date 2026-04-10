@@ -621,6 +621,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   </div>
   <div style="max-width:1200px;margin:40px auto 0;border-top:1px solid #1a2a16;padding-top:24px;text-align:center">
     <p style="color:#3d4a36;font-size:12px">&copy; 2025 Kaski Logging, Inc. All rights reserved. WA Contractor License #KASKIL*835LJ | UBI 602-806-754</p>
+    <p style="color:#3d4a36;font-size:11px;margin-top:10px">Built by <a href="https://www.simplebuildai.com" target="_blank" rel="noopener" style="color:var(--timber);text-decoration:none;font-weight:600">SimpleBuild AI</a></p>
   </div>
 </footer>
 

@@ -135,8 +135,6 @@ function renderProcess(): string {
 function renderTeam(): string {
   return [
     { img: '/static/logging/real-sunset-loaders.jpg', name: 'Leif Kaski', role: 'Owner & Operator', exp: '40+ years in timber', desc: 'Third-generation logger. Oversees all operations and client relationships.' },
-    { img: '/static/logging/real-cat-loader-mountain.jpg', name: 'Jake Abernathy', role: 'Operations Foreman', exp: '22 years experience', desc: 'Manages on-site crew operations, equipment logistics, and safety compliance.' },
-    { img: '/static/logging/real-loaded-truck.jpg', name: 'Mike Proctor', role: 'Head Faller', exp: '18 years experience', desc: 'Master of hand-felling on steep terrain. Certified rigging slinger and choker setter.' },
   ].map(t => `
     <div class="team-card" data-aos>
       <img src="${t.img}" alt="${t.name}" style="width:100%;height:300px;object-fit:cover;margin-bottom:16px;border-radius:20px">
@@ -448,7 +446,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <span class="os" style="font-size:12px;color:var(--forest);letter-spacing:4px;display:block;margin-bottom:8px">Meet the Crew</span>
       <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:var(--charcoal);margin-bottom:16px">Our Leadership Team</h2>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px" class="mobile-full" data-aos>
+    <div style="display:grid;grid-template-columns:1fr;gap:32px;max-width:400px;margin:0 auto" class="mobile-full" data-aos>
       ${renderTeam()}
     </div>
   </div>

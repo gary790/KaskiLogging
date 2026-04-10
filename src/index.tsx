@@ -11,11 +11,186 @@ const app = new Hono()
 
 function stars(n: number) { let s = ''; for (let i = 0; i < n; i++) s += '<i class="fas fa-star"></i>'; return s }
 
+// ── Helper functions to generate dynamic HTML sections ──
+
+function renderTrustBar(): string {
+  return [
+    { icon: 'fas fa-shield-alt', text: 'Licensed & Bonded' },
+    { icon: 'fas fa-hard-hat', text: 'OSHA Compliant' },
+    { icon: 'fas fa-leaf', text: 'Sustainable Practices' },
+    { icon: 'fas fa-award', text: 'WA L&I Certified' },
+    { icon: 'fas fa-truck', text: 'Full Fleet' },
+    { icon: 'fas fa-handshake', text: 'DNR Approved' },
+  ].map(b => `
+    <div style="display:flex;align-items:center;gap:10px">
+      <i class="${b.icon}" style="color:var(--timber);font-size:16px"></i>
+      <span style="color:rgba(255,255,255,0.85);font-size:13px;font-weight:600">${b.text}</span>
+    </div>
+  `).join('')
+}
+
+function renderServices(): string {
+  return [
+    { icon: 'fas fa-tree', title: 'Selective Logging', desc: 'Precision tree removal that preserves surrounding forest health. We select and harvest target species while maintaining the ecological balance of the stand. Ideal for forest thinning and timber stand improvement.' },
+    { icon: 'fas fa-mountain', title: 'Clear-Cut Harvesting', desc: 'Full-scale timber harvesting for commercial operations, land development, and forest regeneration. We handle everything from felling to processing, maximizing your board-foot yield.' },
+    { icon: 'fas fa-road', title: 'Road Building', desc: 'Forest access road construction and maintenance. We build haul roads, skid trails, and landing pads that withstand heavy equipment while minimizing environmental impact.' },
+    { icon: 'fas fa-link', title: 'Cable Yarding', desc: 'Specialized steep-slope logging using tower and cable systems. Our skilled rigging crews safely extract timber from terrain too steep for conventional ground-based equipment.' },
+    { icon: 'fas fa-seedling', title: 'Land Clearing', desc: 'Complete lot and parcel clearing for construction, agriculture, and development. Stump removal, brush clearing, and grading — we leave your land ready for the next phase.' },
+    { icon: 'fas fa-clipboard-check', title: 'Timber Cruising', desc: "Professional timber estimation and inventory services. We assess your stand's volume, species mix, and market value to help you make informed harvesting decisions." },
+  ].map(s => `
+    <div class="svc-card" data-aos>
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,rgba(27,58,26,0.1),rgba(26,71,42,0.05));border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+        <i class="${s.icon}" style="font-size:22px;color:var(--forest)"></i>
+      </div>
+      <h3 style="font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:10px">${s.title}</h3>
+      <p style="font-size:14px;color:#666;line-height:1.7">${s.desc}</p>
+    </div>
+  `).join('')
+}
+
+function renderProjectsLarge(): string {
+  return [
+    { img: '/static/logging/real-cat-loader-mountain.jpg', title: 'McCannon Timber Sale', loc: 'Lewis County, WA', size: '111 acres • 6M board feet', desc: 'Large-scale harvest operation on steep terrain using cable yarding systems.' },
+    { img: '/static/logging/real-log-yard.jpg', title: 'Cedar Creek Thinning', loc: 'Clark County, WA', size: '85 acres • Selective harvest', desc: 'Forest health thinning project to reduce fire risk and promote old-growth development.' },
+  ].map(p => `
+    <div class="proj-card" style="height:360px">
+      <img src="${p.img}" alt="${p.title}">
+      <div class="proj-overlay">
+        <div>
+          <span style="background:var(--timber);color:var(--dark);padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;display:inline-block;margin-bottom:8px">${p.size}</span>
+          <h3 style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px">${p.title}</h3>
+          <p style="color:rgba(255,255,255,0.6);font-size:13px"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i>${p.loc}</p>
+          <p style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:6px">${p.desc}</p>
+        </div>
+      </div>
+    </div>
+  `).join('')
+}
+
+function renderProjectsSmall(): string {
+  return [
+    { img: '/static/logging/real-clearcut-hillside.jpg', title: 'Lookout Stewardship', loc: 'Okanogan NF', size: '200 acres' },
+    { img: '/static/logging/real-loaded-truck.jpg', title: 'Yacolt Burn Recovery', loc: 'Skamania County', size: '150 acres' },
+    { img: '/static/logging/real-cable-yarder.jpg', title: 'Gifford Pinchot Thin', loc: 'Cowlitz County', size: '120 acres' },
+  ].map(p => `
+    <div class="proj-card" style="height:280px">
+      <img src="${p.img}" alt="${p.title}">
+      <div class="proj-overlay">
+        <div>
+          <span style="background:var(--timber);color:var(--dark);padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;display:inline-block;margin-bottom:6px">${p.size}</span>
+          <h3 style="color:#fff;font-size:16px;font-weight:800">${p.title}</h3>
+          <p style="color:rgba(255,255,255,0.6);font-size:12px"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i>${p.loc}</p>
+        </div>
+      </div>
+    </div>
+  `).join('')
+}
+
+function renderEquipment(): string {
+  return [
+    { icon: 'fas fa-tractor', title: 'Feller Bunchers', desc: 'CAT 563C and Tigercat 870C feller bunchers for high-volume mechanical harvesting.', count: '3' },
+    { icon: 'fas fa-cog', title: 'Cable Yarders', desc: 'Madill 124 and Thunderbird TSY-255 towers for steep-slope logging operations.', count: '2' },
+    { icon: 'fas fa-truck-loading', title: 'Log Loaders', desc: 'John Deere 437E and CAT 320 log loaders for efficient deck processing and truck loading.', count: '3' },
+    { icon: 'fas fa-truck', title: 'Log Trucks', desc: 'Peterbilt and Kenworth log trucks with self-loading capabilities for timber transport.', count: '6' },
+    { icon: 'fas fa-snowplow', title: 'Skidders', desc: 'CAT 535D and John Deere 848L grapple skidders for ground-based yarding operations.', count: '4' },
+    { icon: 'fas fa-tools', title: 'Processors', desc: 'Waratah H415 and Pierce 3400 stroke delimbers for mechanical processing at the landing.', count: '2' },
+  ].map(e => `
+    <div class="equip-card" data-aos>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="width:48px;height:48px;background:linear-gradient(135deg,rgba(27,58,26,0.1),rgba(26,71,42,0.05));border-radius:14px;display:flex;align-items:center;justify-content:center">
+          <i class="${e.icon}" style="font-size:20px;color:var(--forest)"></i>
+        </div>
+        <span style="background:var(--forest);color:#fff;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:800">${e.count} Units</span>
+      </div>
+      <h3 style="font-size:17px;font-weight:800;color:var(--charcoal);margin-bottom:8px">${e.title}</h3>
+      <p style="font-size:13px;color:#666;line-height:1.6">${e.desc}</p>
+    </div>
+  `).join('')
+}
+
+function renderProcess(): string {
+  return [
+    { step: '1', title: 'Site Assessment', desc: 'We visit your property to evaluate terrain, timber species, volume, access, and environmental considerations. We provide a detailed estimate at no cost.' },
+    { step: '2', title: 'Permitting & Planning', desc: "We handle all required permits — forest practices applications, road permits, SEPA compliance, and DNR notifications. Our team manages the paperwork so you don't have to." },
+    { step: '3', title: 'Road Building & Access', desc: "If needed, we construct haul roads, landings, and skid trails. All roads are built to Washington State Forest Practices standards with proper drainage and erosion control." },
+    { step: '4', title: 'Timber Harvesting', desc: 'Our experienced crews execute the harvest plan — whether ground-based with feller bunchers and skidders, or cable yarding on steep slopes. Safety is our #1 priority.' },
+    { step: '5', title: 'Processing & Transport', desc: 'Logs are processed at the landing — delimbed, bucked to market specifications, sorted by grade, and loaded onto our trucks for delivery to the mill.' },
+    { step: '6', title: 'Site Restoration', desc: 'We clean up slash, stabilize roads, install water bars, and ensure the site meets or exceeds all environmental requirements. We leave the land better than we found it.' },
+  ].map(s => `
+    <div class="process-step" data-step="${s.step}">
+      <h3 style="font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:6px">${s.title}</h3>
+      <p style="font-size:14px;color:#666;line-height:1.7">${s.desc}</p>
+    </div>
+  `).join('')
+}
+
+function renderTeam(): string {
+  return [
+    { img: '/static/logging/real-sunset-loaders.jpg', name: 'Leif Kaski', role: 'Owner & Operator', exp: '40+ years in timber', desc: 'Third-generation logger. Oversees all operations and client relationships.' },
+    { img: '/static/logging/real-cat-loader-mountain.jpg', name: 'Jake Abernathy', role: 'Operations Foreman', exp: '22 years experience', desc: 'Manages on-site crew operations, equipment logistics, and safety compliance.' },
+    { img: '/static/logging/real-loaded-truck.jpg', name: 'Mike Proctor', role: 'Head Faller', exp: '18 years experience', desc: 'Master of hand-felling on steep terrain. Certified rigging slinger and choker setter.' },
+  ].map(t => `
+    <div class="team-card" data-aos>
+      <img src="${t.img}" alt="${t.name}" style="width:100%;height:300px;object-fit:cover;margin-bottom:16px;border-radius:20px">
+      <h3 style="font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:2px">${t.name}</h3>
+      <p style="font-size:13px;color:var(--forest);font-weight:700;margin-bottom:4px">${t.role}</p>
+      <p style="font-size:11px;color:var(--timber);font-weight:600;margin-bottom:8px"><i class="fas fa-star" style="font-size:10px"></i> ${t.exp}</p>
+      <p style="font-size:13px;color:#666;line-height:1.6">${t.desc}</p>
+    </div>
+  `).join('')
+}
+
+function renderReviews(): string {
+  const starsHtml = stars(5)
+  return [
+    { name: 'Robert Hanson', role: 'Timber Land Owner — Lewis County', text: "Kaski Logging handled our 100-acre harvest flawlessly. Their crew was professional, respectful of our property, and finished ahead of schedule. The road work was excellent and the cleanup was impeccable. We've already hired them for our next sale.", rating: 5 },
+    { name: 'DNR Region Manager', role: 'WA Dept. of Natural Resources', text: "We've worked with Kaski Logging on multiple state timber sales. They consistently deliver quality work, meet environmental requirements, and maintain an excellent safety record. One of the best operators in Southwest Washington.", rating: 5 },
+    { name: 'Sarah Mitchell', role: 'Ranch Owner — Clark County', text: 'We needed 15 acres cleared for pasture expansion and Kaski was the only company that could handle the steep terrain. They brought in cable equipment and had it done in two weeks. Very fair pricing and they replanted the edges beautifully.', rating: 5 },
+    { name: 'Tom Eriksson', role: 'Commercial Developer — Vancouver, WA', text: 'Time is money in development and Kaski understands that. They cleared our 40-acre parcel, built the access road, and had the site graded and ready three days early. Their estimating was spot-on and there were zero surprises on the invoice.', rating: 5 },
+    { name: 'Mike & Linda Pearson', role: 'Forest Land Trust — Cowlitz County', text: 'We hired Kaski for a selective thinning to improve our old-growth stand health. They were incredibly careful — not a single leave tree was damaged. Leif personally walked the site with us to make sure we were happy with the results.', rating: 5 },
+    { name: 'Jim Blackwell', role: 'Cattleman — Skamania County', text: "After the windstorm took out half our timber, Kaski was out there within 48 hours to start salvage operations. They saved us tens of thousands of dollars by getting the logs to the mill before they degraded. Can't recommend them enough.", rating: 5 },
+  ].map(r => `
+    <div class="rev-card" data-aos>
+      <div style="display:flex;gap:4px;color:var(--timber);font-size:14px;margin-bottom:12px">${starsHtml}</div>
+      <p style="font-size:14px;color:#444;line-height:1.7;margin-bottom:16px;font-style:italic">"${r.text}"</p>
+      <div style="border-top:1px solid #eee;padding-top:12px">
+        <p style="font-weight:700;font-size:14px;color:var(--charcoal)">${r.name}</p>
+        <p style="font-size:12px;color:#888">${r.role}</p>
+      </div>
+    </div>
+  `).join('')
+}
+
+function renderServiceAreas(): string {
+  return ['Clark County', 'Cowlitz County', 'Lewis County', 'Skamania County', 'Wahkiakum County', 'Pacific County', 'Thurston County', 'Pierce County', 'Okanogan County', 'Chelan County', 'Yakima County', 'Kittitas County'].map(area => `
+    <span style="background:rgba(27,58,26,0.06);border:1px solid rgba(27,58,26,0.1);color:var(--forest);padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600">${area}</span>
+  `).join('')
+}
+
+function renderFaq(): string {
+  return [
+    { q: 'How much does logging cost?', a: 'Costs vary based on terrain, timber species, volume, and access. In many cases, the stumpage value of the timber exceeds the logging cost — meaning you get paid. We provide free, no-obligation estimates so you know exactly what to expect.' },
+    { q: 'Do you handle the permits?', a: "Yes. We manage all permitting including Forest Practices Applications, road permits, SEPA compliance, and DNR notifications. We have decades of experience navigating Washington State's regulatory requirements." },
+    { q: 'What about environmental requirements?', a: 'We strictly follow all Washington State Forest Practices rules including stream buffers, wildlife tree retention, slope stability requirements, and erosion control. We also voluntarily exceed minimum standards on many projects.' },
+    { q: 'How long does a typical logging project take?', a: 'Timelines vary by project size and complexity. A typical 50-100 acre harvest takes 4-8 weeks. We provide a detailed schedule during the estimate phase and keep you updated throughout the project.' },
+    { q: 'Do you replant after harvesting?', a: 'When required by law (which is most cases in Washington), we handle all reforestation. We plant native species appropriate for the site and follow up to ensure successful establishment. Many clients choose to replant even when not required.' },
+    { q: 'Are you insured?', a: "Absolutely. We carry comprehensive general liability, workers' compensation, and equipment insurance. We are licensed, bonded, and insured through the State of Washington. We're happy to provide certificates of insurance to any client or landowner." },
+    { q: 'Do you buy standing timber?', a: 'Yes. We purchase standing timber (stumpage) and can provide competitive bids on your timber sale. We work with timber cruisers to assess volume and value, and we pay fair market prices. Contact us for a free timber appraisal.' },
+  ].map(f => `
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggleFaq(this)">${f.q}<span class="faq-icon" style="transition:transform 0.3s;font-size:18px;color:var(--forest)">+</span></button>
+      <div class="faq-body"><p style="font-size:14px;color:#666;line-height:1.7">${f.a}</p></div>
+    </div>
+  `).join('')
+}
+
+// ── Main page HTML ──
+
 function kaskiLogging(): string {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Kaski Logging | Timber Harvesting &amp; Forestry Services — Amboy, WA</title>
 <meta name="description" content="Pacific Northwest timber harvesting experts since 1985. Selective logging, land clearing, cable yarding, road building. Licensed, bonded, insured. Amboy, Washington.">
-<script src="https://cdn.tailwindcss.com"><\/script>
+<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -26,6 +201,7 @@ body{overflow-x:hidden}
 img{max-width:100%;display:block}
 @media(max-width:768px){
   .hide-mobile{display:none!important}
+  #mob-toggle{display:block!important}
   .mobile-col{flex-direction:column!important}
   .mobile-full{grid-template-columns:1fr!important}
   .mobile-text-center{text-align:center!important}
@@ -41,7 +217,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const menu=document.getElementById('mob-menu');
   if(btn&&menu){btn.onclick=()=>{menu.style.display=menu.style.display==='flex'?'none':'flex'}}
 });
-<\/script>
+</script>
 <style>
   :root{--dark:#0c1a0a;--forest:#1b3a1a;--timber:#c8a45e;--timberlt:#d4b876;--bark:#3d2b1f;--pine:#1a472a;--smoke:#f5f2ed;--charcoal:#1a1a16}
   body{font-family:'Inter',sans-serif;background:var(--smoke);color:#1e1b16}
@@ -81,7 +257,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     body.classList.toggle('open');
     icon.style.transform=body.classList.contains('open')?'rotate(45deg)':'rotate(0)';
   }
-<\/script>
+</script>
 </head><body>
 
 <!-- NAV -->
@@ -99,7 +275,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <a href="#faq" style="color:#666;font-size:13px;font-weight:600">FAQ</a>
       <a href="#contact" style="background:linear-gradient(135deg,#1b3a1a,#1a472a);color:#fff;padding:12px 28px;border-radius:12px;font-size:13px;font-weight:700;box-shadow:0 4px 16px rgba(27,58,26,0.2)">Free Estimate</a>
     </div>
-    <button id="mob-toggle" class="hide-mobile" style="display:none;background:none;border:none;font-size:22px;color:#1a1a16"><i class="fas fa-bars"></i></button>
+    <button id="mob-toggle" style="display:none;background:none;border:none;font-size:22px;color:#1a1a16"><i class="fas fa-bars"></i></button>
   </div>
   <div id="mob-menu" style="display:none;flex-direction:column;padding:12px 24px 20px;gap:12px;border-top:1px solid #ddd8cc">
     <a href="#services" style="color:#666;font-size:14px;font-weight:600;padding:8px 0">Services</a>
@@ -162,19 +338,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- TRUST BAR -->
 <section style="background:var(--forest);padding:32px 24px">
   <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:32px">
-    ${[
-      { icon: 'fas fa-shield-alt', text: 'Licensed & Bonded' },
-      { icon: 'fas fa-hard-hat', text: 'OSHA Compliant' },
-      { icon: 'fas fa-leaf', text: 'Sustainable Practices' },
-      { icon: 'fas fa-award', text: 'WA L&I Certified' },
-      { icon: 'fas fa-truck', text: 'Full Fleet' },
-      { icon: 'fas fa-handshake', text: 'DNR Approved' },
-    ].map(b => \`
-      <div style="display:flex;align-items:center;gap:10px">
-        <i class="\${b.icon}" style="color:var(--timber);font-size:16px"></i>
-        <span style="color:rgba(255,255,255,0.85);font-size:13px;font-weight:600">\${b.text}</span>
-      </div>
-    \`).join('')}
+    ${renderTrustBar()}
   </div>
 </section>
 
@@ -187,22 +351,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <p style="color:#666;max-width:600px;margin:0 auto;line-height:1.7">From residential lot clearing to large-scale commercial timber harvesting, we have the expertise and equipment to handle any project in the Pacific Northwest.</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px" class="mobile-full" data-aos>
-      ${[
-        { icon: 'fas fa-tree', title: 'Selective Logging', desc: 'Precision tree removal that preserves surrounding forest health. We select and harvest target species while maintaining the ecological balance of the stand. Ideal for forest thinning and timber stand improvement.' },
-        { icon: 'fas fa-mountain', title: 'Clear-Cut Harvesting', desc: 'Full-scale timber harvesting for commercial operations, land development, and forest regeneration. We handle everything from felling to processing, maximizing your board-foot yield.' },
-        { icon: 'fas fa-road', title: 'Road Building', desc: 'Forest access road construction and maintenance. We build haul roads, skid trails, and landing pads that withstand heavy equipment while minimizing environmental impact.' },
-        { icon: 'fas fa-link', title: 'Cable Yarding', desc: 'Specialized steep-slope logging using tower and cable systems. Our skilled rigging crews safely extract timber from terrain too steep for conventional ground-based equipment.' },
-        { icon: 'fas fa-seedling', title: 'Land Clearing', desc: 'Complete lot and parcel clearing for construction, agriculture, and development. Stump removal, brush clearing, and grading — we leave your land ready for the next phase.' },
-        { icon: 'fas fa-clipboard-check', title: 'Timber Cruising', desc: "Professional timber estimation and inventory services. We assess your stand's volume, species mix, and market value to help you make informed harvesting decisions." },
-      ].map(s => \`
-        <div class="svc-card" data-aos>
-          <div style="width:56px;height:56px;background:linear-gradient(135deg,rgba(27,58,26,0.1),rgba(26,71,42,0.05));border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
-            <i class="\${s.icon}" style="font-size:22px;color:var(--forest)"></i>
-          </div>
-          <h3 style="font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:10px">\${s.title}</h3>
-          <p style="font-size:14px;color:#666;line-height:1.7">\${s.desc}</p>
-        </div>
-      \`).join('')}
+      ${renderServices()}
     </div>
   </div>
 </section>
@@ -216,40 +365,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       <p style="color:#666;max-width:600px;margin:0 auto;line-height:1.7">Explore our recent timber harvesting operations across Washington State. Every job is executed with precision, safety, and respect for the land.</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:20px" class="mobile-full" data-aos>
-      ${[
-        { img: '/static/logging/real-cat-loader-mountain.jpg', title: 'McCannon Timber Sale', loc: 'Lewis County, WA', size: '111 acres • 6M board feet', desc: 'Large-scale harvest operation on steep terrain using cable yarding systems.' },
-        { img: '/static/logging/real-log-yard.jpg', title: 'Cedar Creek Thinning', loc: 'Clark County, WA', size: '85 acres • Selective harvest', desc: 'Forest health thinning project to reduce fire risk and promote old-growth development.' },
-      ].map(p => \`
-        <div class="proj-card" style="height:360px">
-          <img src="\${p.img}" alt="\${p.title}">
-          <div class="proj-overlay">
-            <div>
-              <span style="background:var(--timber);color:var(--dark);padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;display:inline-block;margin-bottom:8px">\${p.size}</span>
-              <h3 style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px">\${p.title}</h3>
-              <p style="color:rgba(255,255,255,0.6);font-size:13px"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i>\${p.loc}</p>
-              <p style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:6px">\${p.desc}</p>
-            </div>
-          </div>
-        </div>
-      \`).join('')}
+      ${renderProjectsLarge()}
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px" class="mobile-full" data-aos>
-      ${[
-        { img: '/static/logging/real-clearcut-hillside.jpg', title: 'Lookout Stewardship', loc: 'Okanogan NF', size: '200 acres' },
-        { img: '/static/logging/real-loaded-truck.jpg', title: 'Yacolt Burn Recovery', loc: 'Skamania County', size: '150 acres' },
-        { img: '/static/logging/real-cable-yarder.jpg', title: 'Gifford Pinchot Thin', loc: 'Cowlitz County', size: '120 acres' },
-      ].map(p => \`
-        <div class="proj-card" style="height:280px">
-          <img src="\${p.img}" alt="\${p.title}">
-          <div class="proj-overlay">
-            <div>
-              <span style="background:var(--timber);color:var(--dark);padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;display:inline-block;margin-bottom:6px">\${p.size}</span>
-              <h3 style="color:#fff;font-size:16px;font-weight:800">\${p.title}</h3>
-              <p style="color:rgba(255,255,255,0.6);font-size:12px"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i>\${p.loc}</p>
-            </div>
-          </div>
-        </div>
-      \`).join('')}
+      ${renderProjectsSmall()}
     </div>
   </div>
 </section>
@@ -263,25 +382,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <p style="color:#666;max-width:600px;margin:0 auto;line-height:1.7">We own and maintain a full fleet of heavy logging equipment. No rentals, no delays — just reliable iron ready to work.</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px" class="mobile-full" data-aos>
-      ${[
-        { icon: 'fas fa-tractor', title: 'Feller Bunchers', desc: 'CAT 563C and Tigercat 870C feller bunchers for high-volume mechanical harvesting.', count: '3' },
-        { icon: 'fas fa-cog', title: 'Cable Yarders', desc: 'Madill 124 and Thunderbird TSY-255 towers for steep-slope logging operations.', count: '2' },
-        { icon: 'fas fa-truck-loading', title: 'Log Loaders', desc: 'John Deere 437E and CAT 320 log loaders for efficient deck processing and truck loading.', count: '3' },
-        { icon: 'fas fa-truck', title: 'Log Trucks', desc: 'Peterbilt and Kenworth log trucks with self-loading capabilities for timber transport.', count: '6' },
-        { icon: 'fas fa-snowplow', title: 'Skidders', desc: 'CAT 535D and John Deere 848L grapple skidders for ground-based yarding operations.', count: '4' },
-        { icon: 'fas fa-tools', title: 'Processors', desc: 'Waratah H415 and Pierce 3400 stroke delimbers for mechanical processing at the landing.', count: '2' },
-      ].map(e => \`
-        <div class="equip-card" data-aos>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-            <div style="width:48px;height:48px;background:linear-gradient(135deg,rgba(27,58,26,0.1),rgba(26,71,42,0.05));border-radius:14px;display:flex;align-items:center;justify-content:center">
-              <i class="\${e.icon}" style="font-size:20px;color:var(--forest)"></i>
-            </div>
-            <span style="background:var(--forest);color:#fff;padding:4px 12px;border-radius:8px;font-size:12px;font-weight:800">\${e.count} Units</span>
-          </div>
-          <h3 style="font-size:17px;font-weight:800;color:var(--charcoal);margin-bottom:8px">\${e.title}</h3>
-          <p style="font-size:13px;color:#666;line-height:1.6">\${e.desc}</p>
-        </div>
-      \`).join('')}
+      ${renderEquipment()}
     </div>
   </div>
 </section>
@@ -295,19 +396,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <p style="color:#666;max-width:600px;margin:0 auto;line-height:1.7">From first contact to final cleanup, here's how we handle every logging project.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:40px" data-aos>
-      ${[
-        { step: '1', title: 'Site Assessment', desc: 'We visit your property to evaluate terrain, timber species, volume, access, and environmental considerations. We provide a detailed estimate at no cost.' },
-        { step: '2', title: 'Permitting & Planning', desc: "We handle all required permits — forest practices applications, road permits, SEPA compliance, and DNR notifications. Our team manages the paperwork so you don't have to." },
-        { step: '3', title: 'Road Building & Access', desc: "If needed, we construct haul roads, landings, and skid trails. All roads are built to Washington State Forest Practices standards with proper drainage and erosion control." },
-        { step: '4', title: 'Timber Harvesting', desc: 'Our experienced crews execute the harvest plan — whether ground-based with feller bunchers and skidders, or cable yarding on steep slopes. Safety is our #1 priority.' },
-        { step: '5', title: 'Processing & Transport', desc: 'Logs are processed at the landing — delimbed, bucked to market specifications, sorted by grade, and loaded onto our trucks for delivery to the mill.' },
-        { step: '6', title: 'Site Restoration', desc: 'We clean up slash, stabilize roads, install water bars, and ensure the site meets or exceeds all environmental requirements. We leave the land better than we found it.' },
-      ].map(s => \`
-        <div class="process-step" data-step="\${s.step}">
-          <h3 style="font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:6px">\${s.title}</h3>
-          <p style="font-size:14px;color:#666;line-height:1.7">\${s.desc}</p>
-        </div>
-      \`).join('')}
+      ${renderProcess()}
     </div>
   </div>
 </section>
@@ -352,19 +441,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:var(--charcoal);margin-bottom:16px">Our Leadership Team</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px" class="mobile-full" data-aos>
-      ${[
-        { img: '/static/logging/real-sunset-loaders.jpg', name: 'Leif Kaski', role: 'Owner & Operator', exp: '40+ years in timber', desc: 'Third-generation logger. Oversees all operations and client relationships.' },
-        { img: '/static/logging/real-cat-loader-mountain.jpg', name: 'Jake Abernathy', role: 'Operations Foreman', exp: '22 years experience', desc: 'Manages on-site crew operations, equipment logistics, and safety compliance.' },
-        { img: '/static/logging/real-loaded-truck.jpg', name: 'Mike Proctor', role: 'Head Faller', exp: '18 years experience', desc: 'Master of hand-felling on steep terrain. Certified rigging slinger and choker setter.' },
-      ].map(t => \`
-        <div class="team-card" data-aos>
-          <img src="\${t.img}" alt="\${t.name}" style="width:100%;height:300px;object-fit:cover;margin-bottom:16px;border-radius:20px">
-          <h3 style="font-size:18px;font-weight:800;color:var(--charcoal);margin-bottom:2px">\${t.name}</h3>
-          <p style="font-size:13px;color:var(--forest);font-weight:700;margin-bottom:4px">\${t.role}</p>
-          <p style="font-size:11px;color:var(--timber);font-weight:600;margin-bottom:8px"><i class="fas fa-star" style="font-size:10px"></i> \${t.exp}</p>
-          <p style="font-size:13px;color:#666;line-height:1.6">\${t.desc}</p>
-        </div>
-      \`).join('')}
+      ${renderTeam()}
     </div>
   </div>
 </section>
@@ -377,23 +454,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:var(--charcoal);margin-bottom:16px">What Landowners Say</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px" class="mobile-full" data-aos>
-      ${[
-        { name: 'Robert Hanson', role: 'Timber Land Owner — Lewis County', text: "Kaski Logging handled our 100-acre harvest flawlessly. Their crew was professional, respectful of our property, and finished ahead of schedule. The road work was excellent and the cleanup was impeccable. We've already hired them for our next sale.", rating: 5 },
-        { name: 'DNR Region Manager', role: 'WA Dept. of Natural Resources', text: "We've worked with Kaski Logging on multiple state timber sales. They consistently deliver quality work, meet environmental requirements, and maintain an excellent safety record. One of the best operators in Southwest Washington.", rating: 5 },
-        { name: 'Sarah Mitchell', role: 'Ranch Owner — Clark County', text: 'We needed 15 acres cleared for pasture expansion and Kaski was the only company that could handle the steep terrain. They brought in cable equipment and had it done in two weeks. Very fair pricing and they replanted the edges beautifully.', rating: 5 },
-        { name: 'Tom Eriksson', role: 'Commercial Developer — Vancouver, WA', text: 'Time is money in development and Kaski understands that. They cleared our 40-acre parcel, built the access road, and had the site graded and ready three days early. Their estimating was spot-on and there were zero surprises on the invoice.', rating: 5 },
-        { name: 'Mike & Linda Pearson', role: 'Forest Land Trust — Cowlitz County', text: 'We hired Kaski for a selective thinning to improve our old-growth stand health. They were incredibly careful — not a single leave tree was damaged. Leif personally walked the site with us to make sure we were happy with the results.', rating: 5 },
-        { name: 'Jim Blackwell', role: 'Cattleman — Skamania County', text: "After the windstorm took out half our timber, Kaski was out there within 48 hours to start salvage operations. They saved us tens of thousands of dollars by getting the logs to the mill before they degraded. Can't recommend them enough.", rating: 5 },
-      ].map(r => \`
-        <div class="rev-card" data-aos>
-          <div style="display:flex;gap:4px;color:var(--timber);font-size:14px;margin-bottom:12px">${stars(5)}</div>
-          <p style="font-size:14px;color:#444;line-height:1.7;margin-bottom:16px;font-style:italic">"\${r.text}"</p>
-          <div style="border-top:1px solid #eee;padding-top:12px">
-            <p style="font-weight:700;font-size:14px;color:var(--charcoal)">\${r.name}</p>
-            <p style="font-size:12px;color:#888">\${r.role}</p>
-          </div>
-        </div>
-      \`).join('')}
+      ${renderReviews()}
     </div>
   </div>
 </section>
@@ -407,9 +468,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <p style="color:#666;max-width:600px;margin:0 auto 40px;line-height:1.7">Based in Amboy, WA, we operate across the entire state with a focus on Southwest Washington and the Gifford Pinchot National Forest region.</p>
     </div>
     <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px" data-aos>
-      ${['Clark County', 'Cowlitz County', 'Lewis County', 'Skamania County', 'Wahkiakum County', 'Pacific County', 'Thurston County', 'Pierce County', 'Okanogan County', 'Chelan County', 'Yakima County', 'Kittitas County'].map(area => \`
-        <span style="background:rgba(27,58,26,0.06);border:1px solid rgba(27,58,26,0.1);color:var(--forest);padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600">\${area}</span>
-      \`).join('')}
+      ${renderServiceAreas()}
     </div>
   </div>
 </section>
@@ -422,20 +481,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:var(--charcoal);margin-bottom:16px">Frequently Asked Questions</h2>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px" data-aos>
-      ${[
-        { q: 'How much does logging cost?', a: 'Costs vary based on terrain, timber species, volume, and access. In many cases, the stumpage value of the timber exceeds the logging cost — meaning you get paid. We provide free, no-obligation estimates so you know exactly what to expect.' },
-        { q: 'Do you handle the permits?', a: "Yes. We manage all permitting including Forest Practices Applications, road permits, SEPA compliance, and DNR notifications. We have decades of experience navigating Washington State's regulatory requirements." },
-        { q: 'What about environmental requirements?', a: 'We strictly follow all Washington State Forest Practices rules including stream buffers, wildlife tree retention, slope stability requirements, and erosion control. We also voluntarily exceed minimum standards on many projects.' },
-        { q: 'How long does a typical logging project take?', a: 'Timelines vary by project size and complexity. A typical 50-100 acre harvest takes 4-8 weeks. We provide a detailed schedule during the estimate phase and keep you updated throughout the project.' },
-        { q: 'Do you replant after harvesting?', a: 'When required by law (which is most cases in Washington), we handle all reforestation. We plant native species appropriate for the site and follow up to ensure successful establishment. Many clients choose to replant even when not required.' },
-        { q: 'Are you insured?', a: "Absolutely. We carry comprehensive general liability, workers' compensation, and equipment insurance. We are licensed, bonded, and insured through the State of Washington. We're happy to provide certificates of insurance to any client or landowner." },
-        { q: 'Do you buy standing timber?', a: 'Yes. We purchase standing timber (stumpage) and can provide competitive bids on your timber sale. We work with timber cruisers to assess volume and value, and we pay fair market prices. Contact us for a free timber appraisal.' },
-      ].map(f => \`
-        <div class="faq-item">
-          <button class="faq-btn" onclick="toggleFaq(this)">\${f.q}<span class="faq-icon" style="transition:transform 0.3s;font-size:18px;color:var(--forest)">+</span></button>
-          <div class="faq-body"><p style="font-size:14px;color:#666;line-height:1.7">\${f.a}</p></div>
-        </div>
-      \`).join('')}
+      ${renderFaq()}
     </div>
   </div>
 </section>

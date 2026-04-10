@@ -2,5 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kaski-logging",
   "compatibility_date": "2024-01-01",
-  "pages_build_output_dir": "./dist"
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kaski_logging",
+      "database_id": "169375ab-c351-42d5-8182-6bf8e3c116a9"
+    }
+  ]
 }

@@ -6,8 +6,16 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 
-const app = new Hono()
+type Bindings = {
+  DB: D1Database;
+}
+
+const app = new Hono<{ Bindings: Bindings }>()
+
+// Enable CORS for API routes
+app.use('/api/*', cors())
 
 function stars(n: number) { let s = ''; for (let i = 0; i < n; i++) s += '<i class="fas fa-star"></i>'; return s }
 
@@ -524,28 +532,29 @@ document.addEventListener('DOMContentLoaded',()=>{
         </div>
       </div>
       <div>
-        <form style="background:#fff;border:1px solid #ddd8cc;border-radius:24px;padding:40px">
+        <form id="contactForm" style="background:#fff;border:1px solid #ddd8cc;border-radius:24px;padding:40px" onsubmit="return submitContactForm(event)">
+          <div id="formMsg" style="display:none;padding:16px;border-radius:12px;margin-bottom:20px;font-size:14px;font-weight:600;text-align:center"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
             <div>
-              <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">First Name</label>
-              <input type="text" placeholder="John" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
+              <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">First Name *</label>
+              <input type="text" id="cf_first" name="first_name" placeholder="John" required style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
             </div>
             <div>
-              <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">Last Name</label>
-              <input type="text" placeholder="Smith" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
+              <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">Last Name *</label>
+              <input type="text" id="cf_last" name="last_name" placeholder="Smith" required style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
             </div>
           </div>
           <div style="margin-bottom:16px">
             <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">Phone</label>
-            <input type="tel" placeholder="(360) 555-0000" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
+            <input type="tel" id="cf_phone" name="phone" placeholder="(360) 555-0000" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
           </div>
           <div style="margin-bottom:16px">
             <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">Email</label>
-            <input type="email" placeholder="john@example.com" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
+            <input type="email" id="cf_email" name="email" placeholder="john@example.com" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
           </div>
           <div style="margin-bottom:16px">
             <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">Service Needed</label>
-            <select style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box;color:#666">
+            <select id="cf_service" name="service_needed" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box;color:#666">
               <option>Timber Harvesting</option>
               <option>Land Clearing</option>
               <option>Selective Logging</option>
@@ -558,13 +567,13 @@ document.addEventListener('DOMContentLoaded',()=>{
           </div>
           <div style="margin-bottom:16px">
             <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">Approximate Acreage</label>
-            <input type="text" placeholder="e.g. 50 acres" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
+            <input type="text" id="cf_acreage" name="acreage" placeholder="e.g. 50 acres" style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;box-sizing:border-box">
           </div>
           <div style="margin-bottom:24px">
             <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;font-weight:600">Project Details</label>
-            <textarea rows="4" placeholder="Tell us about your property and what you need..." style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;resize:vertical;box-sizing:border-box"></textarea>
+            <textarea id="cf_details" name="details" rows="4" placeholder="Tell us about your property and what you need..." style="width:100%;padding:14px 16px;border:1px solid #ddd8cc;border-radius:12px;font-size:14px;background:var(--smoke);outline:none;resize:vertical;box-sizing:border-box"></textarea>
           </div>
-          <button type="submit" style="width:100%;background:linear-gradient(135deg,var(--forest),var(--pine));color:#fff;padding:16px;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(27,58,26,0.2);display:flex;align-items:center;justify-content:center;gap:8px"><i class="fas fa-paper-plane"></i> Request Free Estimate</button>
+          <button type="submit" id="cf_submit" style="width:100%;background:linear-gradient(135deg,var(--forest),var(--pine));color:#fff;padding:16px;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(27,58,26,0.2);display:flex;align-items:center;justify-content:center;gap:8px;border:none"><i class="fas fa-paper-plane"></i> Request Free Estimate</button>
         </form>
       </div>
     </div>
@@ -616,10 +625,190 @@ document.addEventListener('DOMContentLoaded',()=>{
     <p style="color:#3d4a36;font-size:12px">&copy; 2025 Kaski Logging, Inc. All rights reserved. WA Contractor License #KASKIL*835LJ | UBI 602-806-754</p>
   </div>
 </footer>
+
+<!-- Contact Form Submission & Analytics -->
+<script>
+async function submitContactForm(e) {
+  e.preventDefault();
+  var btn = document.getElementById('cf_submit');
+  var msg = document.getElementById('formMsg');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+  msg.style.display = 'none';
+  try {
+    var res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: document.getElementById('cf_first').value.trim(),
+        last_name: document.getElementById('cf_last').value.trim(),
+        phone: document.getElementById('cf_phone').value.trim(),
+        email: document.getElementById('cf_email').value.trim(),
+        service_needed: document.getElementById('cf_service').value,
+        acreage: document.getElementById('cf_acreage').value.trim(),
+        details: document.getElementById('cf_details').value.trim()
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      msg.style.background = 'rgba(27,58,26,0.08)';
+      msg.style.color = '#1b3a1a';
+      msg.style.border = '1px solid rgba(27,58,26,0.2)';
+      msg.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+      msg.style.display = 'block';
+      document.getElementById('contactForm').reset();
+    } else {
+      msg.style.background = 'rgba(220,38,38,0.08)';
+      msg.style.color = '#dc2626';
+      msg.style.border = '1px solid rgba(220,38,38,0.2)';
+      msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (data.error || 'Something went wrong.');
+      msg.style.display = 'block';
+    }
+  } catch (err) {
+    msg.style.background = 'rgba(220,38,38,0.08)';
+    msg.style.color = '#dc2626';
+    msg.style.border = '1px solid rgba(220,38,38,0.2)';
+    msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Network error. Please call us at (360) 903-5144.';
+    msg.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Free Estimate';
+  return false;
+}
+// Track page view
+try { fetch('/api/pageview', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ path: location.pathname, referrer: document.referrer }) }); } catch(e){}
+</script>
 </body></html>`
 }
 
-// Routes
+// ── API Routes ──
+
+// POST /api/contact — Save contact form submission to D1
+app.post('/api/contact', async (c) => {
+  try {
+    const body = await c.req.json()
+    const { first_name, last_name, phone, email, service_needed, acreage, details } = body
+
+    if (!first_name || !last_name) {
+      return c.json({ success: false, error: 'First name and last name are required.' }, 400)
+    }
+
+    const result = await c.env.DB.prepare(
+      `INSERT INTO contact_submissions (first_name, last_name, phone, email, service_needed, acreage, details)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    ).bind(first_name, last_name, phone || null, email || null, service_needed || null, acreage || null, details || null).run()
+
+    return c.json({ success: true, id: result.meta.last_row_id, message: 'Thank you! We will contact you within 24 hours.' })
+  } catch (err: any) {
+    return c.json({ success: false, error: 'Something went wrong. Please call us at (360) 903-5144.' }, 500)
+  }
+})
+
+// GET /api/submissions — List all contact submissions (admin)
+app.get('/api/submissions', async (c) => {
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT * FROM contact_submissions ORDER BY created_at DESC LIMIT 100`
+    ).all()
+    return c.json({ success: true, submissions: results })
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500)
+  }
+})
+
+// GET /api/submissions/:id — Get single submission
+app.get('/api/submissions/:id', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const submission = await c.env.DB.prepare(
+      `SELECT * FROM contact_submissions WHERE id = ?`
+    ).bind(id).first()
+    if (!submission) return c.json({ success: false, error: 'Not found' }, 404)
+    return c.json({ success: true, submission })
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500)
+  }
+})
+
+// PATCH /api/submissions/:id/status — Update submission status
+app.patch('/api/submissions/:id/status', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const { status } = await c.req.json()
+    if (!['new', 'contacted', 'scheduled', 'completed', 'archived'].includes(status)) {
+      return c.json({ success: false, error: 'Invalid status' }, 400)
+    }
+    await c.env.DB.prepare(
+      `UPDATE contact_submissions SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`
+    ).bind(status, id).run()
+    return c.json({ success: true })
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500)
+  }
+})
+
+// POST /api/submissions/:id/notes — Add a note to a submission
+app.post('/api/submissions/:id/notes', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const { note } = await c.req.json()
+    if (!note) return c.json({ success: false, error: 'Note text is required' }, 400)
+    const result = await c.env.DB.prepare(
+      `INSERT INTO submission_notes (submission_id, note) VALUES (?, ?)`
+    ).bind(id, note).run()
+    return c.json({ success: true, id: result.meta.last_row_id })
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500)
+  }
+})
+
+// GET /api/submissions/:id/notes — Get notes for a submission
+app.get('/api/submissions/:id/notes', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const { results } = await c.env.DB.prepare(
+      `SELECT * FROM submission_notes WHERE submission_id = ? ORDER BY created_at DESC`
+    ).bind(id).all()
+    return c.json({ success: true, notes: results })
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500)
+  }
+})
+
+// POST /api/pageview — Track a page view
+app.post('/api/pageview', async (c) => {
+  try {
+    const { path, referrer } = await c.req.json()
+    const ua = c.req.header('user-agent') || ''
+    const ip = c.req.header('cf-connecting-ip') || c.req.header('x-forwarded-for') || ''
+    // Simple hash to avoid storing raw IPs
+    const ipHash = ip ? btoa(ip).slice(0, 12) : ''
+    await c.env.DB.prepare(
+      `INSERT INTO page_views (path, referrer, user_agent, ip_hash) VALUES (?, ?, ?, ?)`
+    ).bind(path || '/', referrer || null, ua, ipHash).run()
+    return c.json({ success: true })
+  } catch {
+    return c.json({ success: true }) // Don't fail the page for analytics
+  }
+})
+
+// GET /api/stats — Basic analytics
+app.get('/api/stats', async (c) => {
+  try {
+    const total = await c.env.DB.prepare(`SELECT COUNT(*) as count FROM page_views`).first()
+    const today = await c.env.DB.prepare(
+      `SELECT COUNT(*) as count FROM page_views WHERE date(created_at) = date('now')`
+    ).first()
+    const submissions = await c.env.DB.prepare(
+      `SELECT status, COUNT(*) as count FROM contact_submissions GROUP BY status`
+    ).all()
+    return c.json({ success: true, stats: { total_views: total?.count, today_views: today?.count, submissions: submissions.results } })
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500)
+  }
+})
+
+// ── Page Routes ──
 app.get('/', (c) => c.html(kaskiLogging()))
 app.get('/index', (c) => c.html(kaskiLogging()))
 

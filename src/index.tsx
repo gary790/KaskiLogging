@@ -134,7 +134,7 @@ function renderProcess(): string {
 
 function renderTeam(): string {
   return [
-    { img: '/static/logging/real-sunset-loaders.jpg', name: 'Leif Kaski', role: 'Owner & Operator', exp: '40+ years in timber', desc: 'Third-generation logger. Oversees all operations and client relationships.' },
+    { img: '/static/logging/real-sunset-loaders.jpg', name: 'Leif Kaski', role: 'Owner & Operator', exp: '20+ years in timber', desc: 'Third-generation logger. Oversees all operations and client relationships.' },
   ].map(t => `
     <div class="team-card" data-aos>
       <img src="${t.img}" alt="${t.name}" style="width:100%;height:300px;object-fit:cover;margin-bottom:16px;border-radius:20px">
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div class="hide-mobile" style="display:grid;grid-template-columns:1fr 1fr;gap:16px" data-aos>
       <div style="display:flex;flex-direction:column;gap:16px">
         <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px;backdrop-filter:blur(16px)">
-          <div class="counter">40+</div>
+          <div class="counter">20+</div>
           <p style="color:rgba(255,255,255,0.6);font-size:13px;font-weight:500;margin-top:4px">Years of Experience</p>
         </div>
         <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px;backdrop-filter:blur(16px)">
@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:28px">We're not just loggers — we're stewards of the land. Every harvest plan includes environmental protections, replanting commitments, and sustainable forestry practices that ensure these forests will be here for the next generation.</p>
         <div style="display:flex;gap:32px;flex-wrap:wrap">
           <div>
-            <div class="os" style="font-size:36px;color:var(--timber);font-weight:700">40+</div>
+            <div class="os" style="font-size:36px;color:var(--timber);font-weight:700">20+</div>
             <p style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px">Years in business</p>
           </div>
           <div>

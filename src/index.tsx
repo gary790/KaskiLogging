@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         Harvesting Timber.<br><span style="color:var(--timber)">Preserving Forests.</span>
       </h1>
       <p style="font-size:18px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:36px;max-width:500px" data-aos>
-        From selective logging to large-scale clear-cuts, Kaski Logging delivers professional timber harvesting with safety, precision, and environmental responsibility across Washington State.
+        From selective logging to large-scale clear-cuts, Kaski Logging delivers professional timber harvesting with safety, precision, and environmental responsibility across Washington State and Oregon.
       </p>
       <div style="display:flex;flex-wrap:wrap;gap:12px" data-aos>
         <a href="#contact" style="background:linear-gradient(135deg,var(--timber),var(--timberlt));color:var(--dark);padding:16px 36px;border-radius:14px;font-size:15px;font-weight:800;box-shadow:0 8px 32px rgba(200,164,94,0.25);display:inline-flex;align-items:center;gap:8px;transition:transform 0.3s"><i class="fas fa-phone-alt"></i> Get a Free Estimate</a>

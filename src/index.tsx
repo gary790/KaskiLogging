@@ -96,7 +96,7 @@ function renderProjectsSmall(): string {
 
 function renderEquipment(): string {
   return [
-    { icon: 'fas fa-tractor', title: 'Feller Bunchers', desc: 'CAT 563C and Tigercat 870C feller bunchers for high-volume mechanical harvesting.', count: '3' },
+    { icon: 'fas fa-tractor', title: 'Feller Bunchers/Felling Machines', desc: 'Cat and Tigercat Feller Bunchers and Felling Machines that are capable of cable tethering.', count: '3' },
     { icon: 'fas fa-cog', title: 'Cable Yarders', desc: 'Madill 124 and Thunderbird TSY-255 towers for steep-slope logging operations.', count: '2' },
     { icon: 'fas fa-truck-loading', title: 'Log Loaders', desc: 'John Deere 437E and CAT 320 log loaders for efficient deck processing and truck loading.', count: '3' },
     { icon: 'fas fa-truck', title: 'Log Trucks/Lowboy', desc: 'Peterbilt and Kenworth log trucks and lowboy for timber and equipment transport.', count: '5' },

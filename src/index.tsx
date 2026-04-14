@@ -195,7 +195,7 @@ function renderFaq(): string {
 function kaskiLogging(): string {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Kaski Logging | Timber Harvesting &amp; Forestry Services — Amboy, WA</title>
-<meta name="description" content="Pacific Northwest timber harvesting experts since 1985. Selective logging, land clearing, cable yarding, road building. Licensed, bonded, insured. Amboy, Washington.">
+<meta name="description" content="Pacific Northwest timber harvesting experts since 2007. Selective logging, land clearing, cable yarding, road building. Licensed, bonded, insured. Amboy, Washington.">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px" data-aos>
         <span style="display:inline-block;width:40px;height:2px;background:var(--timber)"></span>
-        <span class="os" style="font-size:12px;color:var(--timber);letter-spacing:3px;font-weight:600">Pacific Northwest Timber Experts Since 1985</span>
+        <span class="os" style="font-size:12px;color:var(--timber);letter-spacing:3px;font-weight:600">Pacific Northwest Timber Experts Since 2007</span>
       </div>
       <h1 class="os" style="font-size:clamp(2.5rem,5vw,4.2rem);line-height:1.05;color:#fff;margin-bottom:24px" data-aos>
         Harvesting Timber.<br><span style="color:var(--timber)">Preserving Forests.</span>
@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <div>
         <span class="os" style="font-size:12px;color:var(--timber);letter-spacing:4px;display:block;margin-bottom:8px">Our Story</span>
         <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:#fff;margin-bottom:20px">Three Generations of Timber</h2>
-        <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:20px">Founded in 1985 in the shadow of Mount St. Helens, Kaski Logging has grown from a two-man crew into one of Southwest Washington's most respected timber harvesting companies.</p>
+        <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:20px">Founded in 2007 in the shadow of Mount St. Helens, Kaski Logging has grown from a two-man crew into one of Southwest Washington's most respected timber harvesting companies.</p>
         <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:20px">Under the leadership of Leif Kaski, we've built our reputation on hard work, honest business practices, and a deep respect for the forests that sustain our livelihood. Our crew members average 15+ years of experience in the woods.</p>
         <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:28px">We're not just loggers — we're stewards of the land. Every harvest plan includes environmental protections, replanting commitments, and sustainable forestry practices that ensure these forests will be here for the next generation.</p>
         <div style="display:flex;gap:32px;flex-wrap:wrap">
@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <div style="margin-bottom:16px">
         <img src="/static/logging/logo-white.png" alt="Kaski Logging Inc." style="height:60px;width:auto">
       </div>
-      <p style="color:#64705e;font-size:13px;line-height:1.7;max-width:280px">Pacific Northwest timber harvesting experts. Licensed, bonded, insured. Serving Washington State since 1985.</p>
+      <p style="color:#64705e;font-size:13px;line-height:1.7;max-width:280px">Pacific Northwest timber harvesting experts. Licensed, bonded, insured. Serving Washington State since 2007.</p>
       <div style="display:flex;gap:12px;margin-top:16px">
         <a href="#" style="width:36px;height:36px;background:rgba(200,164,94,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center"><i class="fab fa-facebook-f" style="color:var(--timber);font-size:14px"></i></a>
         <a href="#" style="width:36px;height:36px;background:rgba(200,164,94,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center"><i class="fab fa-instagram" style="color:var(--timber);font-size:14px"></i></a>

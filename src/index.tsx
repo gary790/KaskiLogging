@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div style="text-align:center;margin-bottom:60px" data-aos>
       <span class="os" style="font-size:12px;color:var(--forest);letter-spacing:4px;display:block;margin-bottom:8px">Our Work</span>
       <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:var(--charcoal);margin-bottom:16px">Recent Projects</h2>
-      <p style="color:#666;max-width:600px;margin:0 auto;line-height:1.7">Explore our recent timber harvesting operations across Washington State. Every job is executed with precision, safety, and respect for the land.</p>
+      <p style="color:#666;max-width:600px;margin:0 auto;line-height:1.7">Explore our recent timber harvesting operations across Washington State and Oregon. Every job is executed with precision, safety, and respect for the land.</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:20px" class="mobile-full" data-aos>
       ${renderProjectsLarge()}

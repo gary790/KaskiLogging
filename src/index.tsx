@@ -97,11 +97,11 @@ function renderProjectsSmall(): string {
 function renderEquipment(): string {
   return [
     { icon: 'fas fa-tractor', title: 'Feller Bunchers/Felling Machines', desc: 'Cat and Tigercat Feller Bunchers and Felling Machines that are capable of cable tethering.', count: '3' },
-    { icon: 'fas fa-cog', title: 'Cable Yarders', desc: 'Madill 124 and Thunderbird TSY-255 towers for steep-slope logging operations.', count: '2' },
-    { icon: 'fas fa-truck-loading', title: 'Log Loaders', desc: 'John Deere 437E and CAT 320 log loaders for efficient deck processing and truck loading.', count: '3' },
+    { icon: 'fas fa-cog', title: 'Cable Yarders', desc: 'Madill 172 with Boman and Acme sky cars and Cat 330D smart Yoder with Acme Grapple and Acme slack puller carriages for steep slope logging operations.', count: '2' },
+    { icon: 'fas fa-truck-loading', title: 'Log Loaders', desc: 'Caterpillar and Doosan loading and logging shovels.', count: '8' },
     { icon: 'fas fa-truck', title: 'Log Trucks/Lowboy', desc: 'Peterbilt and Kenworth log trucks and lowboy for timber and equipment transport.', count: '5' },
     { icon: 'fas fa-snowplow', title: 'Dozers', desc: 'Caterpillar dozers for ground-based yarding operations, road building, and land clearing capabilities.', count: '2' },
-    { icon: 'fas fa-tools', title: 'Processors', desc: 'Waratah H415 and Pierce 3400 stroke delimbers for mechanical processing at the landing.', count: '2' },
+    { icon: 'fas fa-tools', title: 'Processors', desc: 'Caterpillar and Doosan machines with Southstar and Waratah dangle head processors for mechanical processing at the landing.', count: '3' },
   ].map(e => `
     <div class="equip-card" data-aos>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
@@ -120,9 +120,9 @@ function renderProcess(): string {
   return [
     { step: '1', title: 'Site Assessment', desc: 'We visit your property to evaluate terrain, timber species, volume, access, and environmental considerations. We provide a detailed estimate at no cost.' },
     { step: '2', title: 'Permitting & Planning', desc: "We handle all required permits — forest practices applications, road permits, SEPA compliance, and DNR notifications. Our team manages the paperwork so you don't have to." },
-    { step: '3', title: 'Road Building & Access', desc: "If needed, we construct haul roads, landings, and skid trails. All roads are built to Washington State Forest Practices standards with proper drainage and erosion control." },
-    { step: '4', title: 'Timber Harvesting', desc: 'Our experienced crews execute the harvest plan — whether ground-based with feller bunchers and skidders, or cable yarding on steep slopes. Safety is our #1 priority.' },
-    { step: '5', title: 'Processing & Transport', desc: 'Logs are processed at the landing — delimbed, bucked to market specifications, sorted by grade, and loaded onto our trucks for delivery to the mill.' },
+    { step: '3', title: 'Road Building & Access', desc: "If needed, we construct haul roads, landings, and skid trails. All roads are built to Washington State and Oregon State Forest Practices standards with proper drainage and erosion control." },
+    { step: '4', title: 'Timber Harvesting', desc: 'Our experienced crews execute the harvest plan — whether ground-based with feller bunchers and shovels, or cable yarding on steep slopes. Safety is our #1 priority.' },
+    { step: '5', title: 'Processing & Transport', desc: 'Logs are processed at the landing — delimbed, bucked to market and mill specifications, sorted by grade and species, and loaded onto our trucks or contract trucks for delivery to the mill.' },
     { step: '6', title: 'Site Restoration', desc: 'We clean up slash, stabilize roads, install water bars, and ensure the site meets or exceeds all environmental requirements. We leave the land better than we found it.' },
   ].map(s => `
     <div class="process-step" data-step="${s.step}">

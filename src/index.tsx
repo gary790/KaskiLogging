@@ -410,8 +410,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       <div>
         <span class="os" style="font-size:12px;color:var(--timber);letter-spacing:4px;display:block;margin-bottom:8px">Our Story</span>
         <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:#fff;margin-bottom:20px">Three Generations of Timber</h2>
-        <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:20px">Founded in 2007 in the shadow of Mount St. Helens, Kaski Logging has grown from a two-man crew into one of Southwest Washington's most respected timber harvesting companies.</p>
-        <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:20px">Under the leadership of Leif Kaski, we've built our reputation on hard work, honest business practices, and a deep respect for the forests that sustain our livelihood. Our crew members average 15+ years of experience in the woods.</p>
+        <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:20px">Founded in 2007 in the shadow of Mount St. Helens, Kaski Logging has grown from a two-man crew into a full-scale logging company, now operating three timber harvesting crews capable of completing projects from start to finish.</p>
+        <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:20px">Kaski Logging has earned a reputation for hard work, honest business practices, and a deep respect for the forests that sustain our livelihood. Our crew members bring many years of total experience to the woods.</p>
         <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:28px">We're not just loggers — we're stewards of the land. Every harvest plan includes environmental protections, replanting commitments, and sustainable forestry practices that ensure these forests will be here for the next generation.</p>
         <div style="display:flex;gap:32px;flex-wrap:wrap">
           <div>

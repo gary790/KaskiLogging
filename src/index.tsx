@@ -329,10 +329,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       </div>
       <div style="display:flex;flex-direction:column;gap:16px;margin-top:40px">
         <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px;backdrop-filter:blur(16px)">
-          <div class="counter">0</div>
-          <p style="color:rgba(255,255,255,0.6);font-size:13px;font-weight:500;margin-top:4px">Safety Incidents</p>
-        </div>
-        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px;backdrop-filter:blur(16px)">
           <div class="counter">24/7</div>
           <p style="color:rgba(255,255,255,0.6);font-size:13px;font-weight:500;margin-top:4px">Emergency Response</p>
         </div>

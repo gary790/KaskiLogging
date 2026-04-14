@@ -100,7 +100,7 @@ function renderEquipment(): string {
     { icon: 'fas fa-cog', title: 'Cable Yarders', desc: 'Madill 124 and Thunderbird TSY-255 towers for steep-slope logging operations.', count: '2' },
     { icon: 'fas fa-truck-loading', title: 'Log Loaders', desc: 'John Deere 437E and CAT 320 log loaders for efficient deck processing and truck loading.', count: '3' },
     { icon: 'fas fa-truck', title: 'Log Trucks/Lowboy', desc: 'Peterbilt and Kenworth log trucks and lowboy for timber and equipment transport.', count: '5' },
-    { icon: 'fas fa-snowplow', title: 'Skidders', desc: 'CAT 535D and John Deere 848L grapple skidders for ground-based yarding operations.', count: '4' },
+    { icon: 'fas fa-snowplow', title: 'Dozers', desc: 'Caterpillar dozers for ground-based yarding operations, road building, and land clearing capabilities.', count: '2' },
     { icon: 'fas fa-tools', title: 'Processors', desc: 'Waratah H415 and Pierce 3400 stroke delimbers for mechanical processing at the landing.', count: '2' },
   ].map(e => `
     <div class="equip-card" data-aos>

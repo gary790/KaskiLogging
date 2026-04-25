@@ -56,72 +56,59 @@ function renderServices(): string {
   `).join('')
 }
 
-function renderProjectsLarge(): string {
-  return [
+function renderProjects(): string {
+  const all = [
     { img: '/static/logging/projects/proj-mt-st-helens-yarder.jpg', title: 'Mt. St. Helens Cable Operation', loc: 'Skamania County, WA' },
     { img: '/static/logging/projects/proj-cat-sunset-valley.jpg', title: 'Farmland Selective Harvest', loc: 'Clark County, WA' },
     { img: '/static/logging/projects/proj-kenworth-flag.jpg', title: 'Kenworth Log Truck — American Hauling', loc: 'Amboy, WA' },
     { img: '/static/logging/projects/proj-sunset-panorama.jpg', title: 'Sunset Ridge Timber Sale', loc: 'Cowlitz County, WA' },
     { img: '/static/logging/projects/proj-landing-mt-helens.jpg', title: 'Landing Operations — Mt. St. Helens View', loc: 'Skamania County, WA' },
     { img: '/static/logging/projects/proj-cat-doosan-processing.jpg', title: 'CAT & Doosan Processing at Landing', loc: 'Lewis County, WA' },
-  ].map(p => `
-    <div class="proj-card" style="height:360px">
+    { img: '/static/logging/projects/proj-clearcut-feller.jpg', title: 'Ground-Based Yarding', loc: 'Clark County, WA' },
+    { img: '/static/logging/projects/proj-yarder-foggy.jpg', title: 'Foggy Morning Yarder', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-madill-crew.jpg', title: 'Madill Tower & Crew', loc: 'Lewis County, WA' },
+    { img: '/static/logging/projects/proj-skycar-valley.jpg', title: 'Skycar Cable Yarding', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-cat-shovels-hilltop.jpg', title: 'CAT Shovels on Hilltop', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-kenworth-loaded.jpg', title: 'Loaded Kenworth Hauling', loc: 'Pacific County, WA' },
+    { img: '/static/logging/projects/proj-ridgetop-loader.jpg', title: 'Ridgetop Log Loading', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-kenworth-green.jpg', title: 'Kaski Kenworth Log Truck', loc: 'Amboy, WA' },
+    { img: '/static/logging/projects/proj-machine-sunset.jpg', title: 'Felling Machine at Sunset', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-clearcut-mountain.jpg', title: 'Mountain Clearcut Operation', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-linkbelt-processor.jpg', title: 'Link-Belt Processor', loc: 'Lewis County, WA' },
+    { img: '/static/logging/projects/proj-madill-tower-dusk.jpg', title: 'Madill Tower at Dusk', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-dusk-landing.jpg', title: 'Dusk Landing Operations', loc: 'Lewis County, WA' },
+    { img: '/static/logging/projects/proj-snow-yarders.jpg', title: 'Winter Yarder Operations', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-steep-slope-harvest.jpg', title: 'Steep Slope Harvest', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-hilltop-loaders.jpg', title: 'Hilltop Loading Operations', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-peterbilt-lowboy.jpg', title: 'Peterbilt Lowboy Transport', loc: 'Amboy, WA' },
+    { img: '/static/logging/projects/proj-cat-snow-yarder.jpg', title: 'CAT Yarder in Snow', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-dozer-grader.jpg', title: 'Dozer & Grader Road Building', loc: 'Lewis County, WA' },
+    { img: '/static/logging/projects/proj-kaski-dozer.jpg', title: 'Kaski Dozer', loc: 'Clark County, WA' },
+    { img: '/static/logging/projects/proj-cat-feller-buncher.jpg', title: 'CAT Feller Buncher', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-landing-road.jpg', title: 'Landing Road Operations', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-kaski-dozer-forest.jpg', title: 'Kaski Dozer — Forest Road', loc: 'Clark County, WA' },
+    { img: '/static/logging/projects/proj-yarder-panorama.jpg', title: 'Yarder Panorama View', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-cat-tigercat-road.jpg', title: 'CAT & Tigercat on Road', loc: 'Lewis County, WA' },
+    { img: '/static/logging/projects/proj-kaski-lowboy-rain.jpg', title: 'Kaski Lowboy in Rain', loc: 'Clark County, WA' },
+    { img: '/static/logging/projects/proj-kobelco-snow.jpg', title: 'Kobelco Processor in Snow', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-snow-slope-landing.jpg', title: 'Snow Slope Landing', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-winter-landing-loaders.jpg', title: 'Winter Landing Loaders', loc: 'Lewis County, WA' },
+    { img: '/static/logging/projects/proj-landing-logs-road.jpg', title: 'Landing Log Deck', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-drone-flying.jpg', title: 'Drone Line Pulling', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-drone-ground.jpg', title: 'Drone Rigging Operations', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-road-yarder-bluesky.jpg', title: 'Road & Yarder Setup', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-cat330-shovel-yarder.jpg', title: 'CAT 330 Shovel Yarder', loc: 'Cowlitz County, WA' },
+    { img: '/static/logging/projects/proj-truck-fleet-yard.jpg', title: 'Kaski Truck Fleet', loc: 'Amboy, WA' },
+    { img: '/static/logging/projects/proj-hillside-felled.jpg', title: 'Hillside Felling Complete', loc: 'Skamania County, WA' },
+    { img: '/static/logging/projects/proj-cat-feller-forest.jpg', title: 'CAT Feller in Forest', loc: 'Lewis County, WA' },
+  ];
+  return all.map((p, i) => `
+    <div class="proj-card${i >= 6 ? ' proj-hidden' : ''}" style="height:340px">
       <img src="${p.img}" alt="${p.title}" loading="lazy">
       <div class="proj-overlay">
         <div>
-          <h3 style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px">${p.title}</h3>
+          <h3 style="color:#fff;font-size:18px;font-weight:800;margin-bottom:4px">${p.title}</h3>
           <p style="color:rgba(255,255,255,0.6);font-size:13px"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i>${p.loc}</p>
-        </div>
-      </div>
-    </div>
-  `).join('')
-}
-
-function renderProjectsSmall(): string {
-  return [
-    { img: '/static/logging/projects/proj-clearcut-feller.jpg', title: 'Ground-Based Yarding' },
-    { img: '/static/logging/projects/proj-yarder-foggy.jpg', title: 'Foggy Morning Yarder' },
-    { img: '/static/logging/projects/proj-madill-crew.jpg', title: 'Madill Tower & Crew' },
-    { img: '/static/logging/projects/proj-skycar-valley.jpg', title: 'Skycar Cable Yarding' },
-    { img: '/static/logging/projects/proj-cat-shovels-hilltop.jpg', title: 'CAT Shovels on Hilltop' },
-    { img: '/static/logging/projects/proj-kenworth-loaded.jpg', title: 'Loaded Kenworth Hauling' },
-    { img: '/static/logging/projects/proj-ridgetop-loader.jpg', title: 'Ridgetop Log Loading' },
-    { img: '/static/logging/projects/proj-kenworth-green.jpg', title: 'Kaski Kenworth Log Truck' },
-    { img: '/static/logging/projects/proj-machine-sunset.jpg', title: 'Felling Machine at Sunset' },
-    { img: '/static/logging/projects/proj-clearcut-mountain.jpg', title: 'Mountain Clearcut Operation' },
-    { img: '/static/logging/projects/proj-linkbelt-processor.jpg', title: 'Link-Belt Processor' },
-    { img: '/static/logging/projects/proj-madill-tower-dusk.jpg', title: 'Madill Tower at Dusk' },
-    { img: '/static/logging/projects/proj-dusk-landing.jpg', title: 'Dusk Landing Operations' },
-    { img: '/static/logging/projects/proj-snow-yarders.jpg', title: 'Winter Yarder Operations' },
-    { img: '/static/logging/projects/proj-steep-slope-harvest.jpg', title: 'Steep Slope Harvest' },
-    { img: '/static/logging/projects/proj-hilltop-loaders.jpg', title: 'Hilltop Loading Operations' },
-    { img: '/static/logging/projects/proj-peterbilt-lowboy.jpg', title: 'Peterbilt Lowboy Transport' },
-    { img: '/static/logging/projects/proj-cat-snow-yarder.jpg', title: 'CAT Yarder in Snow' },
-    { img: '/static/logging/projects/proj-dozer-grader.jpg', title: 'Dozer & Grader Road Building' },
-    { img: '/static/logging/projects/proj-kaski-dozer.jpg', title: 'Kaski Dozer' },
-    { img: '/static/logging/projects/proj-cat-feller-buncher.jpg', title: 'CAT Feller Buncher' },
-    { img: '/static/logging/projects/proj-landing-road.jpg', title: 'Landing Road Operations' },
-    { img: '/static/logging/projects/proj-kaski-dozer-forest.jpg', title: 'Kaski Dozer — Forest Road' },
-    { img: '/static/logging/projects/proj-yarder-panorama.jpg', title: 'Yarder Panorama View' },
-    { img: '/static/logging/projects/proj-cat-tigercat-road.jpg', title: 'CAT & Tigercat on Road' },
-    { img: '/static/logging/projects/proj-kaski-lowboy-rain.jpg', title: 'Kaski Lowboy in Rain' },
-    { img: '/static/logging/projects/proj-kobelco-snow.jpg', title: 'Kobelco Processor in Snow' },
-    { img: '/static/logging/projects/proj-snow-slope-landing.jpg', title: 'Snow Slope Landing' },
-    { img: '/static/logging/projects/proj-winter-landing-loaders.jpg', title: 'Winter Landing Loaders' },
-    { img: '/static/logging/projects/proj-landing-logs-road.jpg', title: 'Landing Log Deck' },
-    { img: '/static/logging/projects/proj-drone-flying.jpg', title: 'Drone Line Pulling' },
-    { img: '/static/logging/projects/proj-drone-ground.jpg', title: 'Drone Rigging Operations' },
-    { img: '/static/logging/projects/proj-road-yarder-bluesky.jpg', title: 'Road & Yarder Setup' },
-    { img: '/static/logging/projects/proj-cat330-shovel-yarder.jpg', title: 'CAT 330 Shovel Yarder' },
-    { img: '/static/logging/projects/proj-truck-fleet-yard.jpg', title: 'Kaski Truck Fleet' },
-    { img: '/static/logging/projects/proj-hillside-felled.jpg', title: 'Hillside Felling Complete' },
-    { img: '/static/logging/projects/proj-cat-feller-forest.jpg', title: 'CAT Feller in Forest' },
-  ].map(p => `
-    <div class="proj-card" style="height:280px">
-      <img src="${p.img}" alt="${p.title}" loading="lazy">
-      <div class="proj-overlay">
-        <div>
-          <h3 style="color:#fff;font-size:16px;font-weight:800">${p.title}</h3>
         </div>
       </div>
     </div>
@@ -268,10 +255,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   .svc-card:hover{border-color:var(--timber);box-shadow:0 24px 64px rgba(27,58,26,0.08);transform:translateY(-6px)}
   .svc-card:hover::before{transform:scaleX(1)}
   .proj-card{border-radius:20px;overflow:hidden;position:relative;cursor:pointer}
+  .proj-hidden{display:none}
   .proj-card img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s}
   .proj-card:hover img{transform:scale(1.08)}
   .proj-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent 50%);display:flex;align-items:flex-end;padding:24px;opacity:0;transition:opacity 0.4s}
   .proj-card:hover .proj-overlay{opacity:1}
+  .proj-hidden{display:none}
+  .proj-card.proj-show{display:block;animation:projFadeIn 0.5s ease forwards}
+  @keyframes projFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  #show-more-btn:hover{background:var(--timber);transform:translateY(-2px);box-shadow:0 8px 30px rgba(200,164,94,0.4)}
   .rev-card{background:#fff;border:1px solid #ddd8cc;border-radius:20px;padding:32px;transition:all 0.3s}
   .rev-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.06)}
   .team-card{text-align:center;transition:all 0.4s}
@@ -298,6 +290,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     const icon=el.querySelector('.faq-icon');
     body.classList.toggle('open');
     icon.style.transform=body.classList.contains('open')?'rotate(45deg)':'rotate(0)';
+  }
+  function showMoreProjects(){
+    var hidden=document.querySelectorAll('.proj-hidden');
+    hidden.forEach(function(el){el.classList.remove('proj-hidden');el.style.opacity='0';el.style.transform='translateY(20px)';requestAnimationFrame(function(){el.style.transition='opacity 0.5s ease, transform 0.5s ease';el.style.opacity='1';el.style.transform='translateY(0)';});});
+    document.getElementById('show-more-wrap').style.display='none';
   }
 </script>
 </head><body>
@@ -411,11 +408,13 @@ document.addEventListener('DOMContentLoaded',()=>{
       <h2 class="os" style="font-size:clamp(2rem,4vw,3rem);color:var(--charcoal);margin-bottom:16px">Recent Projects</h2>
       <p style="color:#666;max-width:600px;margin:0 auto;line-height:1.7">Explore our recent timber harvesting operations across Washington State and Oregon. Every job is executed with precision, safety, and respect for the land.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px" class="mobile-full" data-aos>
-      ${renderProjectsLarge()}
+    <div id="projects-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px" class="mobile-full" data-aos>
+      ${renderProjects()}
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px" class="mobile-full" data-aos>
-      ${renderProjectsSmall()}
+    <div style="text-align:center;margin-top:40px" id="show-more-wrap" data-aos>
+      <button id="show-more-btn" onclick="showMoreProjects()" style="background:var(--forest);color:#fff;border:none;padding:16px 48px;border-radius:50px;font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 20px rgba(27,58,26,0.3)">
+        <i class="fas fa-th-large" style="margin-right:8px"></i>Show More Projects
+      </button>
     </div>
   </div>
 </section>

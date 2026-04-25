@@ -255,10 +255,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   .equip-card:hover{border-color:var(--forest);box-shadow:0 12px 40px rgba(27,58,26,0.06);transform:translateY(-4px)}
   .counter{font-family:'Oswald',sans-serif;font-size:56px;font-weight:700;line-height:1;background:linear-gradient(135deg,var(--forest),var(--timber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   @keyframes treeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 2.5s ease-in-out;will-change:opacity;transform:scale(1)}
-  .hero-slide-active{opacity:1}
-  @keyframes heroZoom{0%{transform:scale(1)}100%{transform:scale(1.06)}}
-  .hero-slide-active{animation:heroZoom 10s ease-in-out forwards}
+  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 2.5s ease-in-out, transform 10s ease-in-out;will-change:opacity,transform;transform:scale(1)}
+  .hero-slide-active{opacity:1;transform:scale(1.05)}
 </style>
 <script>
   function toggleFaq(el){
@@ -685,18 +683,28 @@ async function submitContactForm(e) {
 }
 // Track page view
 try { fetch('/api/pageview', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ path: location.pathname, referrer: document.referrer }) }); } catch(e){}
-// Hero rolling slideshow
+// Hero rolling slideshow — smooth CSS-transition zoom, no keyframe snapping
 (function(){
   var slides=document.querySelectorAll('.hero-slide');
   var current=0;
   if(slides.length>1){
     setInterval(function(){
-      slides[current].classList.remove('hero-slide-active');
+      var prev=current;
       current=(current+1)%slides.length;
-      slides[current].style.animation='none';
-      void slides[current].offsetWidth;
+      // Instantly reset incoming slide to scale(1) with no transition
+      slides[current].style.transition='none';
+      slides[current].style.transform='scale(1)';
+      void slides[current].offsetWidth; // force reflow
+      // Restore transition for smooth fade+zoom
+      slides[current].style.transition='opacity 2.5s ease-in-out, transform 10s ease-in-out';
+      // Swap active class
+      slides[prev].classList.remove('hero-slide-active');
       slides[current].classList.add('hero-slide-active');
-      slides[current].style.animation='heroZoom 10s ease-in-out forwards';
+      // After old slide fades out, silently reset its scale
+      setTimeout(function(){
+        slides[prev].style.transition='none';
+        slides[prev].style.transform='scale(1)';
+      },2600);
     },8000);
   }
 })();

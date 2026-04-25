@@ -255,6 +255,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   .equip-card:hover{border-color:var(--forest);box-shadow:0 12px 40px rgba(27,58,26,0.06);transform:translateY(-4px)}
   .counter{font-family:'Oswald',sans-serif;font-size:56px;font-weight:700;line-height:1;background:linear-gradient(135deg,var(--forest),var(--timber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   @keyframes treeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.5s ease-in-out;will-change:opacity,transform}
+  .hero-slide-active{opacity:1}
+  @keyframes heroZoom{0%{transform:scale(1)}100%{transform:scale(1.08)}}
+  .hero-slide-active{animation:heroZoom 6s ease-in-out forwards}
 </style>
 <script>
   function toggleFaq(el){
@@ -295,10 +299,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 </nav>
 
 <!-- HERO -->
-<section style="position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:var(--dark)">
-  <div style="position:absolute;inset:0;background:url('/static/logging/hero-fog-hills.jpg') center/cover no-repeat"></div>
-  <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(12,26,10,0.92) 0%,rgba(12,26,10,0.75) 40%,rgba(27,58,26,0.6) 100%)"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,var(--smoke),transparent)"></div>
+<section id="hero" style="position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:var(--dark)">
+  <!-- Rolling background slideshow -->
+  <div id="heroSlides" style="position:absolute;inset:0">
+    <div class="hero-slide hero-slide-active" style="background-image:url('/static/logging/hero-truck.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('/static/logging/hero-sunset-machine.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('/static/logging/hero-yarder-landing.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('/static/logging/hero-mt-st-helens.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('/static/logging/hero-clearcut-mountain.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('/static/logging/hero-winter-landing.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('/static/logging/hero-cat-doosan.jpg')"></div>
+  </div>
+  <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(12,26,10,0.88) 0%,rgba(12,26,10,0.7) 40%,rgba(27,58,26,0.55) 100%);z-index:1"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,var(--smoke),transparent);z-index:1"></div>
   <div style="max-width:1200px;margin:0 auto;padding:140px 24px 100px;position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center" class="hero-grid">
     <div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px" data-aos>
@@ -672,6 +685,20 @@ async function submitContactForm(e) {
 }
 // Track page view
 try { fetch('/api/pageview', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ path: location.pathname, referrer: document.referrer }) }); } catch(e){}
+// Hero rolling slideshow
+(function(){
+  var slides=document.querySelectorAll('.hero-slide');
+  var current=0;
+  if(slides.length>1){
+    setInterval(function(){
+      slides[current].classList.remove('hero-slide-active');
+      slides[current].style.animation='none';
+      current=(current+1)%slides.length;
+      slides[current].classList.add('hero-slide-active');
+      slides[current].style.animation='heroZoom 6s ease-in-out forwards';
+    },5000);
+  }
+})();
 </script>
 </body></html>`
 }

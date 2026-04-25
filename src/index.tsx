@@ -255,10 +255,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   .equip-card:hover{border-color:var(--forest);box-shadow:0 12px 40px rgba(27,58,26,0.06);transform:translateY(-4px)}
   .counter{font-family:'Oswald',sans-serif;font-size:56px;font-weight:700;line-height:1;background:linear-gradient(135deg,var(--forest),var(--timber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   @keyframes treeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.5s ease-in-out;will-change:opacity,transform}
+  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 2.5s ease-in-out;will-change:opacity;transform:scale(1)}
   .hero-slide-active{opacity:1}
-  @keyframes heroZoom{0%{transform:scale(1)}100%{transform:scale(1.08)}}
-  .hero-slide-active{animation:heroZoom 6s ease-in-out forwards}
+  @keyframes heroZoom{0%{transform:scale(1)}100%{transform:scale(1.06)}}
+  .hero-slide-active{animation:heroZoom 10s ease-in-out forwards}
 </style>
 <script>
   function toggleFaq(el){
@@ -692,11 +692,12 @@ try { fetch('/api/pageview', { method:'POST', headers:{'Content-Type':'applicati
   if(slides.length>1){
     setInterval(function(){
       slides[current].classList.remove('hero-slide-active');
-      slides[current].style.animation='none';
       current=(current+1)%slides.length;
+      slides[current].style.animation='none';
+      void slides[current].offsetWidth;
       slides[current].classList.add('hero-slide-active');
-      slides[current].style.animation='heroZoom 6s ease-in-out forwards';
-    },5000);
+      slides[current].style.animation='heroZoom 10s ease-in-out forwards';
+    },8000);
   }
 })();
 </script>

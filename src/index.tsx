@@ -10,12 +10,26 @@ import { cors } from 'hono/cors'
 
 type Bindings = {
   DB: D1Database;
+  ADMIN_KEY?: string;
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
 
 // Enable CORS for API routes
 app.use('/api/*', cors())
+
+// Submission data is customer PII — require the ADMIN_KEY Pages secret
+// (Authorization: Bearer <key> header, or ?key=<key> query param).
+const adminAuth = async (c: any, next: () => Promise<void>) => {
+  const provided =
+    (c.req.header('authorization') || '').replace(/^Bearer\s+/i, '') || c.req.query('key') || ''
+  if (!c.env.ADMIN_KEY || provided !== c.env.ADMIN_KEY) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401)
+  }
+  await next()
+}
+app.use('/api/submissions', adminAuth)
+app.use('/api/submissions/*', adminAuth)
 
 function stars(n: number) { let s = ''; for (let i = 0; i < n; i++) s += '<i class="fas fa-star"></i>'; return s }
 
@@ -537,7 +551,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <img src="/static/logging/logo-white.png" alt="Kaski Logging" style="height:80px;width:auto;margin:0 auto 20px;display:block">
     <h2 class="os" style="font-size:clamp(2rem,4vw,2.8rem);color:#fff;margin-bottom:16px">Ready to Harvest Your Timber?</h2>
     <p style="color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:36px">Get a free, no-obligation estimate on your timber sale or land clearing project. We'll walk your property, assess the timber, and give you an honest evaluation.</p>
-    <a href="#contact" style="background:linear-gradient(135deg,var(--timber),var(--timberlt));color:var(--dark);padding:18px 44px;border-radius:14px;font-size:17px;font-weight:800;box-shadow:0 8px 32px rgba(200,164,94,0.3);display:inline-flex;align-items:center;gap:10px"><i class="fas fa-phone-alt"></i> Call (360) 903-5144</a>
+    <a href="#contact" style="background:linear-gradient(135deg,var(--timber),var(--timberlt));color:var(--dark);padding:18px 44px;border-radius:14px;font-size:17px;font-weight:800;box-shadow:0 8px 32px rgba(200,164,94,0.3);display:inline-flex;align-items:center;gap:10px"><i class="fas fa-phone-alt"></i> Call (360) 247-5402</a>
   </div>
 </section>
 
@@ -552,11 +566,11 @@ document.addEventListener('DOMContentLoaded',()=>{
         <div style="display:flex;flex-direction:column;gap:20px">
           <div style="display:flex;align-items:center;gap:16px">
             <div style="width:48px;height:48px;background:linear-gradient(135deg,rgba(27,58,26,0.1),rgba(26,71,42,0.05));border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-phone-alt" style="color:var(--forest)"></i></div>
-            <div><p style="font-size:12px;color:#888;margin-bottom:2px">Call Us</p><p style="font-weight:700;font-size:16px;color:var(--charcoal)">(360) 903-5144</p></div>
+            <div><p style="font-size:12px;color:#888;margin-bottom:2px">Call Us</p><p style="font-weight:700;font-size:16px;color:var(--charcoal)">(360) 247-5402</p></div>
           </div>
           <div style="display:flex;align-items:center;gap:16px">
             <div style="width:48px;height:48px;background:linear-gradient(135deg,rgba(27,58,26,0.1),rgba(26,71,42,0.05));border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-envelope" style="color:var(--forest)"></i></div>
-            <div><p style="font-size:12px;color:#888;margin-bottom:2px">Email Us</p><p style="font-weight:700;font-size:16px;color:var(--charcoal)">info@kaskilogging.com</p></div>
+            <div><p style="font-size:12px;color:#888;margin-bottom:2px">Email Us</p><p style="font-weight:700;font-size:16px;color:var(--charcoal)">office@kaskilogging.com</p></div>
           </div>
           <div style="display:flex;align-items:center;gap:16px">
             <div style="width:48px;height:48px;background:linear-gradient(135deg,rgba(27,58,26,0.1),rgba(26,71,42,0.05));border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-map-marker-alt" style="color:var(--forest)"></i></div>
@@ -655,7 +669,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     </div>
     <div>
       <h4 style="color:#fff;font-weight:700;font-size:14px;margin-bottom:16px">Contact</h4>
-      <p style="color:#64705e;font-size:13px;line-height:2"><i class="fas fa-phone-alt" style="color:var(--timber);width:20px"></i> (360) 903-5144<br><i class="fas fa-envelope" style="color:var(--timber);width:20px"></i> info@kaskilogging.com<br><i class="fas fa-map-marker-alt" style="color:var(--timber);width:20px"></i> Amboy, WA 98601</p>
+      <p style="color:#64705e;font-size:13px;line-height:2"><i class="fas fa-phone-alt" style="color:var(--timber);width:20px"></i> (360) 247-5402<br><i class="fas fa-envelope" style="color:var(--timber);width:20px"></i> office@kaskilogging.com<br><i class="fas fa-map-marker-alt" style="color:var(--timber);width:20px"></i> Amboy, WA 98601</p>
     </div>
   </div>
   <div style="max-width:1200px;margin:40px auto 0;border-top:1px solid #1a2a16;padding-top:24px;text-align:center">
@@ -706,7 +720,7 @@ async function submitContactForm(e) {
     msg.style.background = 'rgba(220,38,38,0.08)';
     msg.style.color = '#dc2626';
     msg.style.border = '1px solid rgba(220,38,38,0.2)';
-    msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Network error. Please call us at (360) 903-5144.';
+    msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Network error. Please call us at (360) 247-5402.';
     msg.style.display = 'block';
   }
   btn.disabled = false;
@@ -763,7 +777,7 @@ app.post('/api/contact', async (c) => {
 
     return c.json({ success: true, id: result.meta.last_row_id, message: 'Thank you! We will contact you within 24 hours.' })
   } catch (err: any) {
-    return c.json({ success: false, error: 'Something went wrong. Please call us at (360) 903-5144.' }, 500)
+    return c.json({ success: false, error: 'Something went wrong. Please call us at (360) 247-5402.' }, 500)
   }
 })
 

@@ -127,3 +127,10 @@ docker-compose.override.yml
 .grunt
 .lock-wscript
 
+
+# Local dev secrets
+.dev.vars
+.admin-key.local
+
+# Wrangler local state
+.wrangler/

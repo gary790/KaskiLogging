@@ -48,6 +48,8 @@ npx wrangler pages deploy dist --project-name kaski-logging
 | `POST` | `/api/pageview` | Track a page view (path, referrer) |
 | `GET` | `/api/stats` | Basic analytics (total views, today views, submission counts) |
 
+All `/api/submissions*` endpoints require the `ADMIN_KEY` secret (`Authorization: Bearer <key>` header or `?key=<key>` query param) — they expose customer PII. The production key lives in `.admin-key.local` (gitignored) and as a Cloudflare Pages secret; rotate with `npx wrangler pages secret put ADMIN_KEY --project-name kaski-logging`. For local dev, put `ADMIN_KEY=...` in `.dev.vars`.
+
 ## Data Architecture
 
 - **Database**: Cloudflare D1 (`kaski_logging` — ID: `169375ab-c351-42d5-8182-6bf8e3c116a9`)
@@ -102,8 +104,8 @@ webapp/
 ## Business Details
 
 - **Company**: Kaski Logging, Inc.
-- **Phone**: (360) 903-5144
-- **Email**: info@kaskilogging.com
+- **Phone**: (360) 247-5402
+- **Email**: office@kaskilogging.com
 - **Address**: 22411 NE Cedar Creek Rd, Amboy, WA 98601
 - **License**: WA Contractor License #KASKIL*835LJ | UBI 602-806-754
 - **Colors**: Forest Green (#1b3a1a) + Timber Gold (#c8a45e)

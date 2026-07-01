@@ -11,6 +11,9 @@ import { cors } from 'hono/cors'
 type Bindings = {
   DB: D1Database;
   ADMIN_KEY?: string;
+  RESEND_API_KEY?: string;
+  NOTIFY_TO?: string;
+  NOTIFY_FROM?: string;
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -52,6 +55,52 @@ async function checkFormToken(secret: string, token: string): Promise<'ok' | 'fa
   if (age < 4000) return 'fast'
   if (age > 6 * 60 * 60 * 1000) return 'bad'
   return 'ok'
+}
+
+// ── New-lead email notification via Resend ──
+// No-op unless the RESEND_API_KEY secret is set. Failures never block the
+// submission (it is already saved to D1); errors are swallowed by the caller.
+type LeadFields = {
+  id: number | undefined
+  first_name: string
+  last_name: string
+  phone?: string
+  email?: string
+  service_needed?: string
+  acreage?: string
+  details?: string
+}
+async function sendNewLeadEmail(env: Bindings, s: LeadFields): Promise<void> {
+  if (!env.RESEND_API_KEY) return
+  const esc = (v: unknown) =>
+    String(v ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch] as string))
+  const rows = (
+    [
+      ['Name', `${s.first_name} ${s.last_name}`],
+      ['Phone', s.phone || '—'],
+      ['Email', s.email || '—'],
+      ['Service', s.service_needed || '—'],
+      ['Acreage', s.acreage || '—'],
+      ['Details', s.details || '—']
+    ] as const
+  )
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:6px 16px 6px 0;color:#666;vertical-align:top;white-space:nowrap">${k}</td><td style="padding:6px 0;color:#222">${esc(v)}</td></tr>`
+    )
+    .join('')
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: env.NOTIFY_FROM || 'Kaski Logging Website <onboarding@resend.dev>',
+      to: [env.NOTIFY_TO || 'office@kaskilogging.com'],
+      subject: `New estimate request — ${s.first_name} ${s.last_name}${s.service_needed ? ` (${s.service_needed})` : ''}`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:560px"><h2 style="color:#1b3a1a;margin-bottom:4px">New estimate request${s.id ? ` #${s.id}` : ''}</h2><p style="color:#888;margin-top:0">Submitted on kaskilogging.com</p><table style="border-collapse:collapse">${rows}</table><p style="color:#aaa;font-size:12px;margin-top:24px">Reply to this email to respond to the customer directly.</p></div>`,
+      ...(s.email ? { reply_to: s.email } : {})
+    })
+  })
+  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`)
 }
 
 function stars(n: number) { let s = ''; for (let i = 0; i < n; i++) s += '<i class="fas fa-star"></i>'; return s }
@@ -831,6 +880,17 @@ app.post('/api/contact', async (c) => {
       `INSERT INTO contact_submissions (first_name, last_name, phone, email, service_needed, acreage, details, ip_hash, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(first_name, last_name, phone || null, email || null, service_needed || null, acreage || null, details || null, ipHash, spammy ? 'spam' : 'new').run()
+
+    // Email the office about real leads only (not quarantined spam), without
+    // delaying the response; a failed email never fails the submission.
+    if (!spammy) {
+      const lead: LeadFields = { id: result.meta.last_row_id, first_name, last_name, phone, email, service_needed, acreage, details }
+      try {
+        c.executionCtx.waitUntil(sendNewLeadEmail(c.env, lead).catch((e) => console.log('lead email failed:', e?.message || e)))
+      } catch {
+        await sendNewLeadEmail(c.env, lead).catch((e) => console.log('lead email failed:', e?.message || e))
+      }
+    }
 
     return c.json({ success: true, id: result.meta.last_row_id, message: 'Thank you! We will contact you within 24 hours.' })
   } catch (err: any) {

@@ -48,6 +48,8 @@ npx wrangler pages deploy dist --project-name kaski-logging
 | `POST` | `/api/pageview` | Track a page view (path, referrer) |
 | `GET` | `/api/stats` | Basic analytics (total views, today views, submission counts) |
 
+`POST /api/contact` has layered bot protection: an HMAC-signed page token (blocks direct API posts and submissions faster than 4s), a hidden honeypot field (bots that fill it get a fake success and nothing is saved), a rate limit (3 per IP per 10 min), and link-containing submissions are saved with `status='spam'` instead of `new`.
+
 All `/api/submissions*` endpoints require the `ADMIN_KEY` secret (`Authorization: Bearer <key>` header or `?key=<key>` query param) — they expose customer PII. The production key lives in `.admin-key.local` (gitignored) and as a Cloudflare Pages secret; rotate with `npx wrangler pages secret put ADMIN_KEY --project-name kaski-logging`. For local dev, put `ADMIN_KEY=...` in `.dev.vars`.
 
 ## Data Architecture

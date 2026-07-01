@@ -31,6 +31,29 @@ const adminAuth = async (c: any, next: () => Promise<void>) => {
 app.use('/api/submissions', adminAuth)
 app.use('/api/submissions/*', adminAuth)
 
+// ── Bot protection for the public contact form ──
+// Each page render embeds an HMAC-signed timestamp token; submissions must
+// echo it back. Blocks direct POSTs to the API, instant (<4s) submissions,
+// and stale replayed tokens. Uses ADMIN_KEY as the signing secret.
+const enc = new TextEncoder()
+async function hmacHex(secret: string, msg: string): Promise<string> {
+  const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(msg))
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+async function makeFormToken(secret: string): Promise<string> {
+  const ts = Date.now().toString()
+  return ts + '.' + (await hmacHex(secret, ts))
+}
+async function checkFormToken(secret: string, token: string): Promise<'ok' | 'fast' | 'bad'> {
+  const [ts, sig] = (token || '').split('.')
+  if (!ts || !sig || sig !== (await hmacHex(secret, ts))) return 'bad'
+  const age = Date.now() - Number(ts)
+  if (age < 4000) return 'fast'
+  if (age > 6 * 60 * 60 * 1000) return 'bad'
+  return 'ok'
+}
+
 function stars(n: number) { let s = ''; for (let i = 0; i < n; i++) s += '<i class="fas fa-star"></i>'; return s }
 
 // ── Helper functions to generate dynamic HTML sections ──
@@ -227,7 +250,7 @@ function renderFaq(): string {
 
 // ── Main page HTML ──
 
-function kaskiLogging(): string {
+function kaskiLogging(formToken: string): string {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Kaski Logging | Timber Harvesting &amp; Forestry Services — Amboy, WA</title>
 <meta name="description" content="Pacific Northwest timber harvesting experts since 2007. Selective logging, land clearing, cable yarding, road building. Licensed, bonded, insured. Amboy, Washington.">
@@ -584,6 +607,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       </div>
       <div>
         <form id="contactForm" style="background:#fff;border:1px solid #ddd8cc;border-radius:24px;padding:40px" onsubmit="return submitContactForm(event)">
+          <input type="hidden" id="cf_token" value="${formToken}">
+          <div style="position:absolute;left:-9999px;top:-9999px;height:1px;overflow:hidden" aria-hidden="true"><label for="cf_website">Website</label><input type="text" id="cf_website" name="website" tabindex="-1" autocomplete="off"></div>
           <div id="formMsg" style="display:none;padding:16px;border-radius:12px;margin-bottom:20px;font-size:14px;font-weight:600;text-align:center"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
             <div>
@@ -698,7 +723,9 @@ async function submitContactForm(e) {
         email: document.getElementById('cf_email').value.trim(),
         service_needed: document.getElementById('cf_service').value,
         acreage: document.getElementById('cf_acreage').value.trim(),
-        details: document.getElementById('cf_details').value.trim()
+        details: document.getElementById('cf_details').value.trim(),
+        form_token: document.getElementById('cf_token').value,
+        website: document.getElementById('cf_website').value
       })
     });
     var data = await res.json();
@@ -766,14 +793,44 @@ app.post('/api/contact', async (c) => {
     const body = await c.req.json()
     const { first_name, last_name, phone, email, service_needed, acreage, details } = body
 
+    // Honeypot: hidden field humans never see — filled means bot. Pretend success, save nothing.
+    if ((body.website || '').toString().trim()) {
+      return c.json({ success: true, message: 'Thank you! We will contact you within 24 hours.' })
+    }
+    if (c.env.ADMIN_KEY) {
+      const tok = await checkFormToken(c.env.ADMIN_KEY, (body.form_token || '').toString())
+      if (tok === 'bad') {
+        return c.json({ success: false, error: 'Your session expired. Please refresh the page and try again.' }, 400)
+      }
+      if (tok === 'fast') {
+        return c.json({ success: false, error: 'Please take a moment to review your request, then submit again.' }, 400)
+      }
+    }
+
     if (!first_name || !last_name) {
       return c.json({ success: false, error: 'First name and last name are required.' }, 400)
     }
 
+    // Rate limit: max 3 submissions per IP per 10 minutes
+    const ip = c.req.header('cf-connecting-ip') || ''
+    const ipHash = ip ? btoa(ip).substring(0, 12) : null
+    if (ipHash) {
+      const recent = await c.env.DB.prepare(
+        `SELECT COUNT(*) AS n FROM contact_submissions WHERE ip_hash = ? AND created_at > datetime('now', '-10 minutes')`
+      ).bind(ipHash).first<{ n: number }>()
+      if ((recent?.n ?? 0) >= 3) {
+        return c.json({ success: false, error: 'Too many requests. Please call us at (360) 247-5402.' }, 429)
+      }
+    }
+
+    // Submissions containing links are almost always spam — quarantine them
+    // as status 'spam' (still saved, reviewable via /api/submissions).
+    const spammy = /(https?:\/\/|www\.)/i.test([first_name, last_name, details].filter(Boolean).join(' '))
+
     const result = await c.env.DB.prepare(
-      `INSERT INTO contact_submissions (first_name, last_name, phone, email, service_needed, acreage, details)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
-    ).bind(first_name, last_name, phone || null, email || null, service_needed || null, acreage || null, details || null).run()
+      `INSERT INTO contact_submissions (first_name, last_name, phone, email, service_needed, acreage, details, ip_hash, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(first_name, last_name, phone || null, email || null, service_needed || null, acreage || null, details || null, ipHash, spammy ? 'spam' : 'new').run()
 
     return c.json({ success: true, id: result.meta.last_row_id, message: 'Thank you! We will contact you within 24 hours.' })
   } catch (err: any) {
@@ -886,7 +943,7 @@ app.get('/api/stats', async (c) => {
 })
 
 // ── Page Routes ──
-app.get('/', (c) => c.html(kaskiLogging()))
-app.get('/index', (c) => c.html(kaskiLogging()))
+app.get('/', async (c) => c.html(kaskiLogging(c.env.ADMIN_KEY ? await makeFormToken(c.env.ADMIN_KEY) : '')))
+app.get('/index', async (c) => c.html(kaskiLogging(c.env.ADMIN_KEY ? await makeFormToken(c.env.ADMIN_KEY) : '')))
 
 export default app

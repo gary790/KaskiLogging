@@ -5,10 +5,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "pages_build_output_dir": "./dist",
   "vars": {
-    // Sender for new-lead notification emails (domain must be verified in Resend).
-    // Once kaskilogging.com is verified there, switch to e.g. "Kaski Logging Website <notifications@kaskilogging.com>".
-    "NOTIFY_FROM": "Kaski Logging Website <notifications@simplebuildpro.com>",
-    "NOTIFY_TO": "office@kaskilogging.com"
+    // Senders require the domain to be verified in Resend (kaskilogging.com is).
+    "NOTIFY_FROM": "Kaski Logging Website <notifications@kaskilogging.com>",
+    "NOTIFY_TO": "office@kaskilogging.com",
+    "CONFIRM_FROM": "Kaski Logging <office@kaskilogging.com>"
   },
   "d1_databases": [
     {

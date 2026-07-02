@@ -14,6 +14,7 @@ type Bindings = {
   RESEND_API_KEY?: string;
   NOTIFY_TO?: string;
   NOTIFY_FROM?: string;
+  CONFIRM_FROM?: string;
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -101,6 +102,88 @@ async function sendNewLeadEmail(env: Bindings, s: LeadFields): Promise<void> {
     })
   })
   if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`)
+}
+
+// Customer-facing confirmation email. Table-based inline-styled HTML for broad
+// email-client support; images are hot-linked from the live site.
+async function sendCustomerConfirmationEmail(env: Bindings, s: LeadFields): Promise<void> {
+  const to = (s.email || '').trim()
+  if (!env.RESEND_API_KEY || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return
+  const esc = (v: unknown) =>
+    String(v ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch] as string))
+  const first = esc(s.first_name)
+  const service = s.service_needed ? esc(s.service_needed) : ''
+  const SITE = 'https://kaskilogging.com'
+  const bullet = (text: string) =>
+    `<tr><td style="padding:6px 12px 6px 0;color:#1b3a1a;font-weight:bold;vertical-align:top">&#10003;</td><td style="padding:6px 0;color:#444;font-size:15px;line-height:1.6">${text}</td></tr>`
+  const html = `<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#f4f2ec">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ec;padding:24px 0">
+<tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden">
+  <tr><td align="center" style="background:#1b3a1a;padding:32px 24px">
+    <img src="${SITE}/static/logging/logo-white.png" alt="Kaski Logging, Inc." height="64" style="height:64px;width:auto;display:block">
+  </td></tr>
+  <tr><td>
+    <img src="${SITE}/static/logging/real-sunset-loaders.jpg" alt="Kaski Logging equipment at sunset" width="600" style="width:100%;height:auto;display:block">
+  </td></tr>
+  <tr><td style="padding:36px 40px 8px">
+    <h1 style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:24px;color:#1b3a1a">We received your request, ${first}!</h1>
+    <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:15px;line-height:1.7;color:#444">
+      Thank you for reaching out to Kaski Logging${service ? ` about <strong>${service}</strong>` : ''}.
+      Your request is in our hands &mdash; we review every inquiry personally and will get back to you
+      <strong>within 24 business hours</strong>.
+    </p>
+    <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:15px;line-height:1.7;color:#444">
+      Need us sooner? Call us directly at <a href="tel:+13602475402" style="color:#1b3a1a;font-weight:bold;text-decoration:none">(360) 247-5402</a>.
+    </p>
+  </td></tr>
+  <tr><td style="padding:8px 40px 4px">
+    <h2 style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:17px;color:#1b3a1a">What you can expect from us</h2>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif">
+      ${bullet('A free, no-obligation site visit and an honest evaluation of your timber')}
+      ${bullet('Three generations of Pacific Northwest logging experience &mdash; working these forests since 1985')}
+      ${bullet('Full-service capability: selective logging, clear-cut harvesting, cable yarding &amp; steep-slope work')}
+      ${bullet('Land clearing, forestry road building, and professional timber cruising')}
+      ${bullet('Licensed, bonded &amp; insured &mdash; WA Contractor #KASKIL*835LJ')}
+    </table>
+  </td></tr>
+  <tr><td style="padding:20px 40px 8px">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td width="49%" style="padding-right:6px"><img src="${SITE}/static/logging/real-cable-yarder.jpg" alt="Cable yarding on a Pacific Northwest hillside" width="254" style="width:100%;height:auto;display:block;border-radius:8px"></td>
+      <td width="49%" style="padding-left:6px"><img src="${SITE}/static/logging/projects/proj-landing-mt-helens.jpg" alt="Log landing with Mt. St. Helens in the distance" width="254" style="width:100%;height:auto;display:block;border-radius:8px"></td>
+    </tr></table>
+  </td></tr>
+  <tr><td align="center" style="padding:28px 40px 36px">
+    <a href="${SITE}" style="display:inline-block;background:#c8a45e;color:#231d12;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 36px;border-radius:10px">Visit kaskilogging.com</a>
+  </td></tr>
+  <tr><td style="background:#12210f;padding:28px 40px">
+    <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:13px;color:#9fae97;line-height:1.8">
+      <strong style="color:#ffffff">Kaski Logging, Inc.</strong><br>
+      22411 NE Cedar Creek Rd, Amboy, WA 98601<br>
+      (360) 247-5402 &nbsp;&bull;&nbsp; office@kaskilogging.com<br>
+      Mon&ndash;Fri 6:00 AM &ndash; 6:00 PM
+    </p>
+    <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#5c6b55">
+      You are receiving this because you submitted a request on kaskilogging.com.
+      WA Contractor License #KASKIL*835LJ &nbsp;|&nbsp; UBI 602-806-754
+    </p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: env.CONFIRM_FROM || 'Kaski Logging <office@kaskilogging.com>',
+      to: [to],
+      subject: 'We received your request — Kaski Logging',
+      html
+    })
+  })
+  if (!res.ok) throw new Error(`Resend confirm ${res.status}: ${await res.text()}`)
 }
 
 function stars(n: number) { let s = ''; for (let i = 0; i < n; i++) s += '<i class="fas fa-star"></i>'; return s }
@@ -885,10 +968,18 @@ app.post('/api/contact', async (c) => {
     // delaying the response; a failed email never fails the submission.
     if (!spammy) {
       const lead: LeadFields = { id: result.meta.last_row_id, first_name, last_name, phone, email, service_needed, acreage, details }
+      const notify = Promise.allSettled([
+        sendNewLeadEmail(c.env, lead),
+        sendCustomerConfirmationEmail(c.env, lead)
+      ]).then((rs) =>
+        rs.forEach((r) => {
+          if (r.status === 'rejected') console.log('lead email failed:', (r.reason as any)?.message || r.reason)
+        })
+      )
       try {
-        c.executionCtx.waitUntil(sendNewLeadEmail(c.env, lead).catch((e) => console.log('lead email failed:', e?.message || e)))
+        c.executionCtx.waitUntil(notify)
       } catch {
-        await sendNewLeadEmail(c.env, lead).catch((e) => console.log('lead email failed:', e?.message || e))
+        await notify
       }
     }
 

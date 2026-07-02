@@ -125,7 +125,7 @@ async function sendCustomerConfirmationEmail(env: Bindings, s: LeadFields): Prom
     <img src="${SITE}/static/logging/logo-white.png" alt="Kaski Logging, Inc." height="64" style="height:64px;width:auto;display:block">
   </td></tr>
   <tr><td>
-    <img src="${SITE}/static/logging/real-sunset-loaders.jpg" alt="Kaski Logging equipment at sunset" width="600" style="width:100%;height:auto;display:block">
+    <img src="${SITE}/static/logging/email-hero.jpg" alt="Kaski Logging equipment at sunset" width="600" height="200" style="width:100%;height:auto;display:block">
   </td></tr>
   <tr><td style="padding:36px 40px 8px">
     <h1 style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:24px;color:#1b3a1a">We received your request, ${first}!</h1>
@@ -142,7 +142,6 @@ async function sendCustomerConfirmationEmail(env: Bindings, s: LeadFields): Prom
     <h2 style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:17px;color:#1b3a1a">What you can expect from us</h2>
     <table role="presentation" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif">
       ${bullet('A free, no-obligation site visit and an honest evaluation of your timber')}
-      ${bullet('Three generations of Pacific Northwest logging experience &mdash; working these forests since 1985')}
       ${bullet('Full-service capability: selective logging, clear-cut harvesting, cable yarding &amp; steep-slope work')}
       ${bullet('Land clearing, forestry road building, and professional timber cruising')}
       ${bullet('Licensed, bonded &amp; insured &mdash; WA Contractor #KASKIL*835LJ')}
